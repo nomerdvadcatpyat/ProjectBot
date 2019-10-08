@@ -1,5 +1,6 @@
 package bot.games;
 import bot.*;
+import tools.Parser;
 
 import java.io.*;
 import java.util.*;
@@ -17,19 +18,22 @@ public class CitiesGame {
     }
 
     public void run() {
-        bot.printAnswer("!стоп чтобы остановиться.\nНазовите любой город:");
+        bot.printAnswer("Назовите любой город:");
         lastWord = bot.getCommand();
         lastChar = lastWord.toUpperCase().charAt(0);
-        while (true) {
-            if (lastWord.equals("!стоп")) {
-                bot.stop();
-                return;
-            }
 
+        while (!bot.isStop()) {
             if (!wordsMap.containsKey(lastChar) ||
                     !wordsMap.get(lastChar).contains(lastWord)) {
-                bot.printAnswer("Не-а. Вы проиграли.");
-                return;
+                bot.printAnswer("Не-а. Вы проиграли.\n Сыграем еще?\n 1. Да\n 2. Нет");
+                String command = bot.getCommand();
+                if (command.equals("1")) {
+                    this.run();
+                    return;
+                }
+                if (command.equals("2"))
+                    return;
+
             }
 
             updateLastChar(lastWord);

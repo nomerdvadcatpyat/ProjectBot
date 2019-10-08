@@ -1,11 +1,11 @@
-package bot;
+package tools;
 
 import java.io.*;
 import java.util.*;
 
 public class Parser {
 
-    private static HashMap<Character,ArrayList<String>> wordsMap = new HashMap<>();;
+    private static HashMap<Character,ArrayList<String>> wordsMap = new HashMap<>();
 
     public static HashMap<Character,ArrayList<String>> parse(File file){
         try ( BufferedReader br = new BufferedReader(new FileReader(file)))
