@@ -27,13 +27,12 @@ public class CitiesGame {
                     !wordsMap.get(lastChar).contains(lastWord)) {
                 bot.printAnswer("Не-а. Вы проиграли.\n Сыграем еще?\n 1. Да\n 2. Нет");
                 String command = bot.getCommand();
-                if (command.equals("1")) {
+                if (!bot.isStop() && command.equals("1")) {
                     this.run();
                     return;
                 }
                 if (command.equals("2"))
                     return;
-
             }
 
             updateLastChar(lastWord);

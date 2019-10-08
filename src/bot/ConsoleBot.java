@@ -16,6 +16,10 @@ public class ConsoleBot implements Bot{
         if (command.equals("!стоп")){
             isStop=true;
         }
+        while (command.equals("help")){
+            printHelp();
+            command = sc.nextLine();
+        }
         return command;
     }
 
