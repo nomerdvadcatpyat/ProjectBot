@@ -6,14 +6,14 @@ import java.io.*;
 import java.util.*;
 
 public class CitiesGame {
-    private Bot bot;
+    private IBot bot;
     private Random rnd = new Random();
     private String lastWord;
     private Character lastChar;
-    private HashMap<Character, ArrayList<String>> wordsMap = Parser.parse(new File(System.getProperty("user.dir") +
+    private HashMap<Character, ArrayList<String>> data = Parser.parse(new File(System.getProperty("user.dir") +
             File.separator + "resources" + File.separator + "RussianCities.txt"));
 
-    public CitiesGame(Bot bot) {
+    public CitiesGame(IBot bot) {
         this.bot = bot;
     }
 
@@ -23,8 +23,8 @@ public class CitiesGame {
         lastChar = lastWord.toUpperCase().charAt(0);
 
         while (!bot.isStop()) {
-            if (!wordsMap.containsKey(lastChar) ||
-                    !wordsMap.get(lastChar).contains(lastWord)) {
+            if (!data.containsKey(lastChar) ||
+                    !data.get(lastChar).contains(lastWord)) {
                 bot.printAnswer("Не-а. Вы проиграли.\n Сыграем еще?\n 1. Да\n 2. Нет");
                 String command = bot.getCommand();
                 if (!bot.isStop() && command.equals("1")) {
@@ -36,12 +36,12 @@ public class CitiesGame {
             }
 
             updateLastChar(lastWord);
-            wordsMap.get(lastChar).remove(lastWord);
+            data.get(lastChar).remove(lastWord);
 
-            if (!wordsMap.get(lastChar).isEmpty()) {
-                var index = rnd.nextInt(wordsMap.get(lastChar).size() - 1);
-                lastWord = wordsMap.get(lastChar).get(index);
-                wordsMap.get(lastChar).remove(index);
+            if (!data.get(lastChar).isEmpty()) {
+                var index = rnd.nextInt(data.get(lastChar).size() - 1);
+                lastWord = data.get(lastChar).get(index);
+                data.get(lastChar).remove(index);
                 bot.printAnswer(lastWord);
                 updateLastChar(lastWord);
             } else {
@@ -56,7 +56,7 @@ public class CitiesGame {
 
     private void updateLastChar(String lastWord){
         lastChar = lastWord.toUpperCase().charAt(lastWord.length() - 1);
-        if (lastChar == 'Ь' || lastChar == 'Ы' || lastChar == 'Ъ' || lastChar == 'Й')
+        if (lastChar == 'Ь' || lastChar == 'Ы' || lastChar == 'Ъ' || lastChar == 'Й' || lastChar == 'Ё')
             lastChar = lastWord.toUpperCase().charAt(lastWord.length() - 2);
     }
 }

@@ -1,9 +1,9 @@
 package bot;
 
-import java.io.*;
 import java.util.*;
 
-public class ConsoleBot implements Bot{
+public class ConsoleBot implements IBot {
+
     private boolean isStop = false;
     private Scanner sc = new Scanner(System.in);
 
@@ -31,4 +31,10 @@ public class ConsoleBot implements Bot{
         System.out.println("Консольный бот:\n!старт чтобы начать использовать бота\n" +
                 "!стоп чтобы закончить использовать бота");
     }
+
+    public static void main(String[] args) {
+        ConsoleBot bot = new ConsoleBot();
+        bot.initialize();
+    }
+
 }
