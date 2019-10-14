@@ -12,13 +12,20 @@ public class ConsoleBot implements IBot {
     }
 
     public String getCommand() {
+
         String command = sc.nextLine();
-        if (command.equals("!стоп")){
-            isStop=true;
-        }
-        while (command.equals("help")){
-            printHelp();
-            command = sc.nextLine();
+        switch (command) {
+            case "!стоп": {
+                isStop = true;
+                break;
+            }
+            case "help": {
+                while (command.equals("help")) {
+                    printHelp();
+                    command = getCommand();
+                }
+                break;
+            }
         }
         return command;
     }
@@ -28,7 +35,7 @@ public class ConsoleBot implements IBot {
     }
 
     public void printHelp() {
-        System.out.println("Консольный бот:\n!старт чтобы начать использовать бота\n" +
+        printAnswer("Консольный бот:\n!старт чтобы начать использовать бота\n" +
                 "!стоп чтобы закончить использовать бота");
     }
 
