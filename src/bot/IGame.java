@@ -1,7 +1,7 @@
 package bot;
 
 public interface IGame {
-    String NAME = null;
+    String getName();
     void run();
     void getHelp();
 }

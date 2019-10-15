@@ -6,18 +6,17 @@ public class ConsoleBot implements IBot {
 
     private boolean isStop = false;
     private Scanner sc = new Scanner(System.in);
-    private List<Games> activities = Arrays.asList(new Games(this));
+    private List<IActivity> activities = Arrays.asList(new Games(this));
 
 
     public void initialize(){
-        var helloMessage = "Привет,я (еще не(а может и совсем не)) универсальный бот!\n";
         var selectCategoryMes = new StringBuilder();
         selectCategoryMes.append("Выбери категорию:\n");
         for (int i = 0; i < activities.size(); i++){
             selectCategoryMes.append(i+1);
-            selectCategoryMes.append(". " + activities.get(i).NAME + "\n");
+            selectCategoryMes.append(". " + activities.get(i).getName() + "\n");
         }
-        printMessage(helloMessage);
+        printMessage("Привет,я (еще не(а может и совсем не)) универсальный бот!\n");
         while (true){
             printMessage(selectCategoryMes.toString());
             var input = getInput();

@@ -1,7 +1,7 @@
 package bot;
 
 public interface IActivity {
-    String NAME = null;
+    String getName();
     void start();
     void getHelp();
 }

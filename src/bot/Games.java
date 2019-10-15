@@ -9,11 +9,15 @@ public class Games implements IActivity {
     public static final String NAME = "Игры";
     private IBot bot;
 
-    private List<CitiesGame> gameList;
+    private List<IGame> gameList;
 
     public Games(IBot bot){
         this.bot = bot;
         gameList = Arrays.asList(new CitiesGame(bot));
+    }
+
+    public String getName() {
+        return NAME;
     }
 
     public void start() {
@@ -22,7 +26,7 @@ public class Games implements IActivity {
         for (int i = 0; i < gameList.size(); i++) {
             startMessage.append(i+1);
             startMessage.append(". ");
-            startMessage.append(gameList.get(i).NAME);
+            startMessage.append(gameList.get(i).getName());
             startMessage.append("\n");
         }
         while (true){

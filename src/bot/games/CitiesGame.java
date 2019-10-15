@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.*;
 
 public class CitiesGame implements IGame {
-    public static final String NAME = "Города";
+    String NAME = "Города";
     private IBot bot;
     private Random rnd = new Random();
     private String lastWord;
@@ -17,6 +17,10 @@ public class CitiesGame implements IGame {
 
     public CitiesGame(IBot bot) {
         this.bot = bot;
+    }
+
+    public String getName() {
+        return NAME;
     }
 
     public void run() {
