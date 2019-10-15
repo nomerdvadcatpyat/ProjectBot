@@ -13,15 +13,16 @@ public class ConsoleBot implements IBot {
 
 
     public void initialize(){
-        var helloMessage = new StringBuilder();
-        helloMessage.append("Привет,я (еще не(а может и совсем не)) универсальный бот!\n" +
-                "Выбери категорию:\n");
+        var helloMessage = "Привет,я (еще не(а может и совсем не)) универсальный бот!\n";
+        var selectCategoryMes = new StringBuilder();
+        selectCategoryMes.append("Выбери категорию:\n");
         for (int i = 0; i < activities.size(); i++){
-            helloMessage.append(Integer.toString(i+1));
-            helloMessage.append(". " + activities.get(i).NAME + "\n");
+            selectCategoryMes.append(Integer.toString(i+1));
+            selectCategoryMes.append(". " + activities.get(i).NAME + "\n");
         }
-        printMessage(helloMessage.toString());
+        printMessage(helloMessage);
         while (!isStop()){
+            printMessage(selectCategoryMes.toString());
             if (getInput().equals("/help")){
                 printHelp();
                 continue;

@@ -26,8 +26,8 @@ public class Games implements IActivity {
             startMessage.append(gameList.get(i).NAME);
             startMessage.append("\n");
         }
-        bot.printMessage(startMessage.toString());
         while (true){
+            bot.printMessage(startMessage.toString());
             if (bot.getInput().equals("/back")) break;
             if (bot.getInput().equals("/help")) {
                 getHelp();

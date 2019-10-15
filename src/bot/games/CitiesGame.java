@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.*;
 
 public class CitiesGame implements IGame {
+    public static final String NAME = "Города";
     private IBot bot;
     private Random rnd = new Random();
     private String lastWord;
