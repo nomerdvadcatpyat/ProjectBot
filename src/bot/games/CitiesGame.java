@@ -5,7 +5,7 @@ import tools.Parser;
 import java.io.*;
 import java.util.*;
 
-public class CitiesGame {
+public class CitiesGame implements IGame {
     private IBot bot;
     private Random rnd = new Random();
     private String lastWord;
@@ -18,15 +18,15 @@ public class CitiesGame {
     }
 
     public void run() {
-        bot.printAnswer("Назовите любой город:");
-        lastWord = bot.getCommand();
+        bot.printMessage("Назовите любой город:");
+        lastWord = bot.getInput();
         lastChar = lastWord.toUpperCase().charAt(0);
 
         while (!bot.isStop()) {
             if (!data.containsKey(lastChar) ||
                     !data.get(lastChar).contains(lastWord)) {
-                bot.printAnswer("Не-а. Вы проиграли.\n Сыграем еще?\n 1. Да\n 2. Нет");
-                String command = bot.getCommand();
+                bot.printMessage("Не-а. Вы проиграли.\n Сыграем еще?\n 1. Да\n 2. Нет");
+                String command = bot.getInput();
                 if (!bot.isStop() && command.equals("1")) {
                     this.run();
                     return;
@@ -42,16 +42,20 @@ public class CitiesGame {
                 var index = rnd.nextInt(data.get(lastChar).size() - 1);
                 lastWord = data.get(lastChar).get(index);
                 data.get(lastChar).remove(index);
-                bot.printAnswer(lastWord);
+                bot.printMessage(lastWord);
                 updateLastChar(lastWord);
             } else {
-                bot.printAnswer("Я проиграл");
+                bot.printMessage("Я проиграл");
                 return;
             }
 
-            lastWord = bot.getCommand();
+            lastWord = bot.getInput();
         }
 
+    }
+
+    public void getHelp() {
+        bot.printHelp();
     }
 
     private void updateLastChar(String lastWord){
