@@ -9,11 +9,6 @@ import java.util.*;
 public class CitiesGame implements IGame {
     String NAME = "Города";
     private IBot bot;
-    private Random rnd = new Random();
-    private String lastWord;
-    private Character lastChar;
-    private HashMap<Character, ArrayList<String>> data = Parser.parse(new File(System.getProperty("user.dir") +
-            File.separator + "resources" + File.separator + "RussianCities.txt"));
 
     public CitiesGame(IBot bot) {
         this.bot = bot;
@@ -24,24 +19,31 @@ public class CitiesGame implements IGame {
     }
 
     public void run() {
+        Random rnd = new Random();
+        String lastWord;
+        Character lastChar;
+        HashMap<Character, ArrayList<String>> data = Parser.parse(new File(System.getProperty("user.dir") +
+                File.separator + "resources" + File.separator + "RussianCities.txt"));
+
         bot.printMessage("Назовите любой город:");
         lastWord = bot.getInput();
         lastChar = lastWord.toUpperCase().charAt(0);
 
         while (!bot.isStop()) {
+            if (lastWord.equals("/back")) return;
             if (!data.containsKey(lastChar) ||
                     !data.get(lastChar).contains(lastWord)) {
-                bot.printMessage("Не-а. Вы проиграли.\n Сыграем еще?\n 1. Да\n 2. Нет");
+                bot.printMessage("Вы проиграли.\n Сыграем еще?\n 1. Да\n 2. Нет");
                 String command = bot.getInput();
                 if (!bot.isStop() && command.equals("1")) {
-                    this.run();
+                    run();
                     return;
                 }
                 if (command.equals("2"))
                     return;
             }
 
-            updateLastChar(lastWord);
+            lastChar = updateLastChar(lastWord, lastChar);
             data.get(lastChar).remove(lastWord);
 
             if (!data.get(lastChar).isEmpty()) {
@@ -49,7 +51,7 @@ public class CitiesGame implements IGame {
                 lastWord = data.get(lastChar).get(index);
                 data.get(lastChar).remove(index);
                 bot.printMessage(lastWord);
-                updateLastChar(lastWord);
+                lastChar = updateLastChar(lastWord, lastChar);
             } else {
                 bot.printMessage("Я проиграл");
                 return;
@@ -61,12 +63,13 @@ public class CitiesGame implements IGame {
     }
 
     public void getHelp() {
-        bot.printHelp();
+        bot.getHelp();
     }
 
-    private void updateLastChar(String lastWord){
+    private Character updateLastChar(String lastWord, Character lastChar){
         lastChar = lastWord.toUpperCase().charAt(lastWord.length() - 1);
         if (lastChar == 'Ь' || lastChar == 'Ы' || lastChar == 'Ъ' || lastChar == 'Й' || lastChar == 'Ё')
             lastChar = lastWord.toUpperCase().charAt(lastWord.length() - 2);
+        return lastChar;
     }
 }

@@ -55,6 +55,6 @@ public class Games implements IActivity {
     }
 
     public void getHelp(){
-        bot.printHelp(); //возможно стоит добавить хелп по разделу
+        bot.getHelp(); //возможно стоит добавить хелп по разделу
     }
 }

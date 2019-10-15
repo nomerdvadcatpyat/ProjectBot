@@ -21,7 +21,7 @@ public class ConsoleBot implements IBot {
             printMessage(selectCategoryMes.toString());
             var input = getInput();
             if (input.equals("/help")){
-                printHelp();
+                getHelp();
                 continue;
             }
             if (input.equals("/stop")) break;
@@ -53,7 +53,7 @@ public class ConsoleBot implements IBot {
         System.out.println(answer);
     }
 
-    public void printHelp() {
+    public void getHelp() {
         printMessage("Консольный бот:\n/start чтобы начать использовать бота\n/stop чтобы закончить использовать бота");
     }
 

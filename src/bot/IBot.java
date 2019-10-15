@@ -6,7 +6,7 @@ public interface IBot {
     boolean isStop();
     String getInput();
     void printMessage(String answer);
-    void printHelp();
+    void getHelp();
 }
 
 
