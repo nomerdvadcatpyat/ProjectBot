@@ -17,25 +17,26 @@ public class Games implements IActivity {
     }
 
     public void start() {
-        bot.printMessage("Для того чтобы вернуться введите /back");
         var startMessage = new StringBuilder();
         startMessage.append("Введите номер игры:\n");
         for (int i = 0; i < gameList.size(); i++) {
-            startMessage.append(Integer.toString(i+1));
+            startMessage.append(i+1);
             startMessage.append(". ");
             startMessage.append(gameList.get(i).NAME);
             startMessage.append("\n");
         }
         while (true){
+            bot.printMessage("Для того чтобы вернуться введите /back");
             bot.printMessage(startMessage.toString());
-            if (bot.getInput().equals("/back")) break;
-            if (bot.getInput().equals("/help")) {
+            var input = bot.getInput();
+            if (input.equals("/back")) break;
+            if (input.equals("/help")) {
                 getHelp();
                 continue;
             }
             int gameNumber;
             try{
-                gameNumber = Integer.parseInt(bot.getInput());
+                gameNumber = Integer.parseInt(input);
             }
             catch (Exception e){
                 bot.printMessage("Ошибка");

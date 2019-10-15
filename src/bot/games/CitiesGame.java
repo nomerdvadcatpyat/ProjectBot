@@ -1,4 +1,5 @@
 package bot.games;
+
 import bot.*;
 import tools.Parser;
 

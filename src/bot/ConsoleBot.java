@@ -1,8 +1,5 @@
 package bot;
 
-import bot.games.CitiesGame;
-
-
 import java.util.*;
 
 public class ConsoleBot implements IBot {
@@ -17,20 +14,21 @@ public class ConsoleBot implements IBot {
         var selectCategoryMes = new StringBuilder();
         selectCategoryMes.append("Выбери категорию:\n");
         for (int i = 0; i < activities.size(); i++){
-            selectCategoryMes.append(Integer.toString(i+1));
+            selectCategoryMes.append(i+1);
             selectCategoryMes.append(". " + activities.get(i).NAME + "\n");
         }
         printMessage(helloMessage);
-        while (!isStop()){
+        while (true){
             printMessage(selectCategoryMes.toString());
-            if (getInput().equals("/help")){
+            var input = getInput();
+            if (input.equals("/help")){
                 printHelp();
                 continue;
             }
-            if (getInput().equals("/stop")) isStop = true;
+            if (input.equals("/stop")) break;
             int categoryNumber;
             try{
-                categoryNumber = Integer.parseInt(getInput());
+                categoryNumber = Integer.parseInt(input);
             }
             catch (Exception e){
                 printMessage("Error");
@@ -49,22 +47,7 @@ public class ConsoleBot implements IBot {
     }
 
     public String getInput() {
-
-        String command = sc.nextLine();
-        /*switch (command) {
-            case "/stop": {
-                isStop = true;
-                break;
-            }
-            case "/help": {
-                while (command.equals("/help")) {
-                    printHelp();
-                    command = getInput();
-                }
-                break;
-            }
-        }*/
-        return command;
+        return sc.nextLine();
     }
 
     public void printMessage(String answer) {
