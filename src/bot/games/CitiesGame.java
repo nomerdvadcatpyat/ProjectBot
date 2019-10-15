@@ -29,17 +29,17 @@ public class CitiesGame implements IGame {
         lastWord = bot.getInput();
         lastChar = lastWord.toUpperCase().charAt(0);
 
-        while (!bot.isStop()) {
+        while (true) {
             if (lastWord.equals("/back")) return;
             if (!data.containsKey(lastChar) ||
                     !data.get(lastChar).contains(lastWord)) {
                 bot.printMessage("Вы проиграли.\n Сыграем еще?\n 1. Да\n 2. Нет");
-                String command = bot.getInput();
-                if (!bot.isStop() && command.equals("1")) {
+                String input = bot.getInput();
+                if (input.equals("1")) {
                     run();
                     return;
                 }
-                if (command.equals("2"))
+                if (input.equals("2"))
                     return;
             }
 

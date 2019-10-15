@@ -41,10 +41,6 @@ public class ConsoleBot implements IBot {
         }
     }
 
-    public boolean isStop() {
-        return isStop;
-    }
-
     public String getInput() {
         return sc.nextLine();
     }
