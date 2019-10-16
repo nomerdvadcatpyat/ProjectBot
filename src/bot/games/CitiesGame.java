@@ -34,7 +34,7 @@ public class CitiesGame implements IGame {
                 File.separator + "resources" + File.separator + "RussianCities.txt"));
 
         bot.printMessage("Назовите любой город:");
-        lastWord = bot.getInput();
+        lastWord = bot.getInput().toLowerCase();
         lastChar = lastWord.charAt(0);
 
         while (true) {
