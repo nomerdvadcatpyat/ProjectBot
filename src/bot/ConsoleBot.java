@@ -4,7 +4,6 @@ import java.util.*;
 
 public class ConsoleBot implements IBot {
 
-    private boolean isStop = false;
     private Scanner sc = new Scanner(System.in);
     private List<IActivity> activities = Arrays.asList(new Games(this));
 
