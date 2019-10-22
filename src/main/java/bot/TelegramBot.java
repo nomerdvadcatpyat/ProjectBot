@@ -3,12 +3,20 @@ package bot;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.lang.reflect.Executable;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class TelegramBot extends TelegramLongPollingBot implements IBot {
 
+    private List<IActivity> activities = Arrays.asList(new Games(this));
+    private Message message;
     public static void main(String[] args) {
 
 
@@ -25,37 +33,54 @@ public class TelegramBot extends TelegramLongPollingBot implements IBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-
-    }
-
-    @Override
-    public String getBotUsername() {
-        return "";
-    }
-
-    @Override
-    public String getBotToken() {
-        return "";
+        message = update.getMessage();
+        if (message != null && message.hasText())
+            switch (message.getText()){
+                case "/start":
+                    initialize();
+                    break;
+            }
     }
 
     @Override
     public void initialize() {
-
     }
 
     @Override
     public String getInput() {
-        return null;
+        return message.getText();
     }
+
 
     @Override
     public void printMessage(String answer) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdown(true);
+        sendMessage.setChatId(message.getChatId().toString());
+        sendMessage.setReplyToMessageId(message.getMessageId());
+        sendMessage.setText(answer);
 
+        try {
+            execute(sendMessage);
+        }catch (TelegramApiException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void getHelp() {
 
+    }
+
+
+    @Override
+    public String getBotUsername() {
+        return "Test687234Bot";
+    }
+
+    @Override
+    public String getBotToken() {
+        return "922363357:AAHhB7dZeGNLbyAoLswnoS_LkpQBBEHSczE";
     }
 
 
