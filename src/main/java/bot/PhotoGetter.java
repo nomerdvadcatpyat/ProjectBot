@@ -15,7 +15,7 @@ public class PhotoGetter {
 
     public static String getPhotoURL(String query) throws IOException {
         URL url = new URL("https://pixabay.com/api/?key=KEY&q=" +
-                URLEncoder.encode(query, "UTF-8") +"&image_type=photo");
+                URLEncoder.encode(query, "UTF-8") +"&image_type=all");
         Scanner sc = new Scanner((InputStream) url.getContent());
         String JSONString = "";
         while (sc.hasNext()){
