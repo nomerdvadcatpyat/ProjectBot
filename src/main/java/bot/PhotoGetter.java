@@ -25,7 +25,7 @@ public class PhotoGetter {
         JSONObject obj = new JSONObject(JSONString);
         JSONArray hits = obj.getJSONArray("hits");
         Random rnd = new Random();
-        JSONObject randomHit = hits.getJSONObject(rnd.nextInt(hits.length()));
+        JSONObject randomHit = hits.getJSONObject(rnd.nextInt(hits.length() - 1));
         String result = randomHit.getString("largeImageURL");
         return result;
     }
