@@ -36,16 +36,17 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (message != null && message.hasText())
             switch (message.getText()){
                 case "/start":
-                    sendMessage(message,"Che nado???");
+                    sendMessage(message,"Hello");
                     break;
                 case"/photo":
                     sendPhoto(message, "https://pixabay.com/get/55e2dc414351ae14f6da8c7dda79367a153dd9e451516c4870287ad3924bc650b0_1280.jpg");
                     break;
                 default:
                     try {
+                        System.out.println(message.getText());
                         sendPhoto(message, PhotoGetter.getPhotoURL(message.getText()));
-                    } catch (IOException e) {
-                        sendMessage(message, "Net takogo");
+                    } catch (Exception e) {
+                        sendMessage(message, "Image not found");
                     }
             }
     }
@@ -106,11 +107,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "Test687234Bot";
+        return "OOPContentBot";
     }
 
     @Override
     public String getBotToken() {
-        return "Token ne dam";
+        return "983564401:AAGxSrVqu3YusyLy6JRujcC-mjJ8Zl6lEd0";
     }
 }
