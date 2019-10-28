@@ -1,6 +1,5 @@
 package bot;
 
-import bot.games.cities.CitiesGame;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -16,14 +15,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
     private Model model = new Model();
-    private CitiesGame citiesGame;
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try{
             telegramBotsApi.registerBot(new TelegramBot());
-
         } catch (TelegramApiException e){
             logger.info(e.getMessage());
         }
@@ -32,45 +29,30 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        logger.info("Чат id - " +update.getMessage().getChatId().toString());
+        String chatID = update.getMessage().getChatId().toString();
         Message message = update.getMessage();
-
         if (message != null && message.hasText()) {
             String messageText = message.getText();
             MenuState lastState = model.getMenuState();
-            model.updateState(messageText);
+            model.updateMenuState(messageText);
             if(lastState != model.getMenuState())
-                sendMessage(message,model.getStateHelloMessage());
-
-            logger.info(model.getMenuState().toString());
-
-
-            switch (model.getMenuState()) {
-                case PhotoGetter:
-                    if(messageText.equals("PhotoGetter"))
-                        break;
-                    try {
-                        sendPhoto(message, PhotoGetter.getPhotoURL(messageText));
-                    } catch (Exception e) {
-                        sendMessage(message, "Image not found");
-                    }
-                    break;
-
-                case CitiesGame:
-                    if (messageText.equals("Cities")) {
-                        citiesGame = new CitiesGame();
-                        break;
-                    }
-                    sendMessage(message, citiesGame.getAnswer(messageText));
+                sendMessage(chatID,model.getStateHelloMessage());
+            String answer = model.getStateAnswer(messageText);
+            if(!answer.isEmpty()) {
+                if (model.getMenuState() == MenuState.PhotoGetter)
+                    sendPhoto(message, answer);
+                else sendMessage(chatID,answer);
             }
+            logger.info(model.getMenuState().toString());
         }
     }
 
-    public void sendMessage(Message message, String text){
+    public void sendMessage(String chatId, String text){
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
-        sendMessage.setChatId(message.getChatId());
+        sendMessage.setChatId(chatId);
         sendMessage.setText(text);
-
         try {
             execute(sendMessage);
         }catch (TelegramApiException e){
@@ -92,7 +74,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "KavoIShoBot";
+        return "OOPContentBot";
     }
 
     @Override

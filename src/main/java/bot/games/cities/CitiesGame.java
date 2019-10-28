@@ -31,6 +31,9 @@ public class CitiesGame {
 
 
     public String getAnswer(String message){
+        //Если первый город придет ошибочный - бот примет его
+        //Добавить изменение ожидаемой первой буквы если город закончился на й ы ь ъ ё
+        //Написать тесты
         if(gameState == GameState.Lose || gameState == GameState.Win)
             return "Вы закончили играть. Напишите Cities для новой игры или Main для выхода в главное меню.";
 
@@ -39,25 +42,25 @@ public class CitiesGame {
         message = message.toLowerCase();
         char firstC = message.charAt(0);
 
-        if(lastWord != null)
-            if(firstC != lastWord.charAt(lastWord.length()-1) || !data.get(firstC).contains(message)) {
+        if(lastWord != null) {
+            if (firstC != lastWord.charAt(lastWord.length() - 1) || !data.get(firstC).contains(message)) {
 
                 //логи
-                logger.info(firstC + " " + lastWord.charAt(lastWord.length()-1) + " " + data.containsKey(firstC));
-                if(data.containsKey(firstC))
-                    logger.info(data.get(firstC).contains(message)+"");
+                logger.info(firstC + " " + lastWord.charAt(lastWord.length() - 1) + " " + data.containsKey(firstC));
+                if (data.containsKey(firstC))
+                    logger.info(data.get(firstC).contains(message) + "");
                 //логи
 
                 gameState = GameState.Lose;
                 return "Вы проиграли.";
             }
-
-        data.get(firstC).remove(message);
+            data.get(firstC).remove(message);
+        }
 
         char lastC = message.charAt(message.length() - 1);
-        String res="Я проиграл";
+        String res="Я проиграл.";
 
-        if(!data.get(lastC).isEmpty()){
+        if(!data.isEmpty() && !data.get(lastC).isEmpty()){
             int index = rnd.nextInt(data.get(lastC).size());
             res = data.get(lastC).get(index);
             data.get(lastC).remove(res);

@@ -1,15 +1,23 @@
 package bot;
 
+import bot.games.cities.CitiesGame;
+import bot.tools.PhotoGetter;
+
+import java.io.IOException;
+import java.util.logging.Logger;
+
 public class Model {
 
     private MenuState menuState;
+    private CitiesGame citiesGame;
+    private static final Logger logger = Logger.getLogger(Model.class.getName());
 
     public MenuState getMenuState(){
         return menuState;
     }
 
-    public void updateState(String message){
-        goToMain(message);
+    public void updateMenuState(String message){
+        toMainMenu(message);
         switch (menuState){
             case MainMenu:
                 if(message.equals("Tools"))
@@ -23,17 +31,34 @@ public class Model {
                     menuState = MenuState.PhotoGetter;
                 break;
 
-            case PhotoGetter:
-                break;
-
             case GamesMenu:
                 if(message.equals("Cities"))
                     menuState = MenuState.CitiesGame;
                 break;
-
-            case CitiesGame:
-                break;
         }
+    }
+
+
+    public String getStateAnswer(String message){
+        switch (menuState){
+            case CitiesGame:
+                if (message.equals("Cities")) {
+                    citiesGame = new CitiesGame();
+                    break;
+                }
+                return citiesGame.getAnswer(message);
+
+            case PhotoGetter:
+                if(message.equals("PhotoGetter"))
+                    break;
+                try {
+                    return PhotoGetter.getPhotoURL(message);
+                } catch (IOException e){
+                    logger.info(e.getMessage());
+                }
+
+        }
+        return "";
     }
 
     public String getStateHelloMessage(){
@@ -52,8 +77,8 @@ public class Model {
         return "";
     }
 
-    void goToMain(String message){
-        if(message.equals("Main"))
+    private void toMainMenu(String message){
+        if(message.equals("Main") || message.equals("/start"))
             menuState = MenuState.MainMenu;
     }
 }
