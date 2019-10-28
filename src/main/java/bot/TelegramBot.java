@@ -1,7 +1,6 @@
 package bot;
 
 import bot.games.cities.CitiesGame;
-import bot.games.cities.GameState;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -33,20 +32,19 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        Message message = update.getMessage();
-        String messageText = message.getText();
-
-
-        MenuState lastState = model.getMenuState();
-        model.updateState(messageText);
-        if(lastState != model.getMenuState())
-            sendMessage(message,model.getStateMessage());
-
-        logger.info(model.getMenuState().toString());
-
-
-
+            Message message = update.getMessage();
         if (message != null && message.hasText()) {
+
+            String messageText = message.getText();
+
+            MenuState lastState = model.getMenuState();
+            model.updateState(messageText);
+            if(lastState != model.getMenuState())
+                sendMessage(message,model.getStateMessage());
+
+            logger.info(model.getMenuState().toString());
+
+
             switch (model.getMenuState()) {
                 case PhotoGetter:
                     if(messageText.equals("PhotoGetter"))
