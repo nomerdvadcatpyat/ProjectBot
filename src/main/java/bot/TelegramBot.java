@@ -1,5 +1,6 @@
 package bot;
 
+import bot.games.cities.CitiesGame;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -7,17 +8,16 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class TelegramBot extends TelegramLongPollingBot {
+    private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
+    private Model model = new Model();
+    private CitiesGame citiesGame;
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
@@ -26,15 +26,54 @@ public class TelegramBot extends TelegramLongPollingBot {
             telegramBotsApi.registerBot(new TelegramBot());
 
         } catch (TelegramApiException e){
-            e.printStackTrace();
+            logger.info(e.getMessage());
         }
     }
+
 
     @Override
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
-        if (message != null && message.hasText())
-            switch (message.getText()){
+        model.updateModel(message.getText());
+        logger.info(model.getModelState().toString());
+
+        if (message != null && message.hasText()) {
+            switch (model.getModelState()) {
+                case MainMenu:
+                    sendMessage(message, "Ты в MainMenu. Доступные опции: \n1)Tools \n2)Games");
+                    break;
+
+                case ToolsMenu:
+                    sendMessage(message, "Ты в ToolsMenu. Доступные опции: \n1)PhotoGetter");
+                    break;
+
+                case GamesMenu:
+                    sendMessage(message, "Ты в GamesMenu. Доступные игры: \n1)Cities");
+                    break;
+
+                case PhotoGetter:
+                    if(message.getText().equals("PhotoGetter")) {
+                        sendMessage(message,"Ты в PhotoGetter.");
+                        break;
+                    }
+                    try {
+                        sendPhoto(message, PhotoGetter.getPhotoURL(message.getText()));
+                    } catch (Exception e) {
+                        sendMessage(message, "Image not found");
+                    }
+                    break;
+
+                case CitiesGame:
+                    if(message.getText().equals("Cities")) {
+                        sendMessage(message,"Ты в CitiesGame. Назови любой город: ");
+                        citiesGame = new CitiesGame();
+                        break;
+                    }
+                    sendMessage(message,citiesGame.getAnswer(message.getText()));
+                    break;
+            }
+        }
+            /*switch (message.getText()){
                 case "/start":
                     sendMessage(message,"Hello");
                     break;
@@ -48,21 +87,19 @@ public class TelegramBot extends TelegramLongPollingBot {
                     } catch (Exception e) {
                         sendMessage(message, "Image not found");
                     }
-            }
+            }*/
     }
 
     public void sendMessage(Message message, String text){
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
-        sendMessage.setChatId(message.getChatId().toString());
-        //sendMessage.setReplyToMessageId(message.getMessageId());
+        sendMessage.setChatId(message.getChatId());
         sendMessage.setText(text);
-        //setButtons(sendMessage);
 
         try {
             execute(sendMessage);
         }catch (TelegramApiException e){
-            e.printStackTrace();
+            logger.info(e.getMessage());
         }
     }
 
@@ -73,7 +110,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(sendPhoto);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage());
         }
     }
 
