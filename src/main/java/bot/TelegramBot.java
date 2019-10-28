@@ -1,6 +1,7 @@
 package bot;
 
 import bot.games.cities.CitiesGame;
+import bot.games.cities.GameState;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -35,10 +36,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         Message message = update.getMessage();
         String messageText = message.getText();
         model.updateState(messageText);
-        logger.info(model.getModelState().toString());
+        logger.info(model.getMenuState().toString());
 
         if (message != null && message.hasText()) {
-            switch (model.getModelState()) {
+            switch (model.getMenuState()) {
                 case MainMenu:
                     sendMessage(message, "Ты в MainMenu. Доступные опции: \n1)Tools \n2)Games");
                     break;
@@ -70,6 +71,15 @@ public class TelegramBot extends TelegramLongPollingBot {
                         break;
                     }
                     sendMessage(message, citiesGame.getAnswer(messageText));
+
+                    /*if(citiesGame.getGameState() == GameState.Lose || citiesGame.getGameState() == GameState.Win) {
+                        sendMessage(message, "Начнем новую игру? \n1)Да\n2)Нет");
+                        if(messageText.equals("Да")) {
+                            citiesGame = new CitiesGame();
+                            break;
+                        } else if(messageText.equals("Нет"))
+                            break;
+                    } */
                     break;
             }
         }
@@ -102,11 +112,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "OOPContentBot";
+        return "KavoIShoBot";
     }
 
     @Override
     public String getBotToken() {
-        return "";
+        return "811627871:AAHuQIXhUgMVLCBsuY2gmEkcct1zbh9b67o";
     }
 }

@@ -1,6 +1,6 @@
 package bot;
 
-public enum ModelState {
+public enum MenuState {
     MainMenu,
     ToolsMenu,
     PhotoGetter,

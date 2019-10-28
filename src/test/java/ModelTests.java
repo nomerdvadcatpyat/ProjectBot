@@ -1,5 +1,5 @@
 import bot.Model;
-import bot.ModelState;
+import bot.MenuState;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -8,6 +8,6 @@ public class ModelTests {
     public void ChangeStateFromMainToTools(){
         Model model = new Model();
         model.updateState("Tools");
-        Assert.assertEquals(ModelState.ToolsMenu,model.getModelState());
+        Assert.assertEquals(MenuState.ToolsMenu,model.getMenuState());
     }
 }

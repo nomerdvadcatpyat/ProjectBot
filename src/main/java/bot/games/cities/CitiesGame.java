@@ -10,8 +10,15 @@ public class CitiesGame {
 
     private static final Logger logger = Logger.getLogger(CitiesGame.class.getName());
     private static HashMap<Character, ArrayList<String>> data;
+    private Random rnd = new Random();
+    private GameState gameState = GameState.InGame;
+
+    public GameState getGameState() {
+        return gameState;
+    }
 
     private String lastWord;
+
 
     public CitiesGame() {
         data = Parser.parse(new File(System.getProperty("user.dir") +
@@ -24,21 +31,42 @@ public class CitiesGame {
 
 
     public String getAnswer(String message){
-        char firstC = message.toLowerCase().charAt(0);
-        if(data.containsKey(firstC) && data.get(firstC).contains(message))
-            data.remove(firstC ,message);
-        char lastC = message.charAt(message.length() - 1);
-        Random rnd = new Random();
-       //String res =
-        return message;
-    }
+        logger.info("В начале - "+ lastWord);
 
-/*    public static void main(String[] args) {
-       var list = new ArrayList<String>();
-        list.add("Алапаевск");
-        var data = new HashMap<Character, ArrayList<String>>();
-        data.put('а',list);
-        CitiesGame citiesGame = new CitiesGame(data);
-        System.out.println(data.get('а').get(0));
-    }*/
+        message = message.toLowerCase();
+        char firstC = message.charAt(0);
+
+        if(lastWord != null)
+            if(firstC != lastWord.charAt(lastWord.length()-1) || !data.get(firstC).contains(message)) {
+
+                //логи
+                logger.info(firstC + " " + lastWord.charAt(lastWord.length()-1) + " " + data.containsKey(firstC));
+                if(data.containsKey(firstC))
+                    logger.info(data.get(firstC).contains(message)+"");
+                //логи
+
+                gameState = GameState.Lose;
+                return "Вы проиграли.";
+            }
+
+        data.get(firstC).remove(message);
+
+        char lastC = message.charAt(message.length() - 1);
+        String res="Я проиграл";
+
+        if(!data.get(lastC).isEmpty()){
+            int index = rnd.nextInt(data.get(lastC).size());
+            res = data.get(lastC).get(index);
+            data.get(lastC).remove(res);
+            res = res.toUpperCase().charAt(0) + res.substring(1);
+            lastWord = res;
+        }
+
+        if(res.equals("Я проиграл"))
+            gameState = GameState.Win;
+
+        logger.info("В конце - " + lastWord);
+
+        return res;
+    }
 }

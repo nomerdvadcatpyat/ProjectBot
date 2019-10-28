@@ -2,45 +2,44 @@ package bot;
 
 public class Model {
 
-    private ModelState modelState = ModelState.MainMenu;
+    private MenuState menuState = MenuState.MainMenu;
 
-    public ModelState getModelState(){
-        return modelState;
+    public MenuState getMenuState(){
+        return menuState;
     }
 
     public void updateState(String message){
-        switch (modelState){
+        getBack(message);
+        switch (menuState){
             case MainMenu:
                 if(message.equals("Tools"))
-                    modelState = ModelState.ToolsMenu;
+                    menuState = MenuState.ToolsMenu;
                 if(message.equals("Games"))
-                    modelState = ModelState.GamesMenu;
+                    menuState = MenuState.GamesMenu;
                 break;
 
             case ToolsMenu:
-                if(message.equals("Back"))
-                    modelState = ModelState.MainMenu;
                 if(message.equals("PhotoGetter"))
-                    modelState = ModelState.PhotoGetter;
+                    menuState = MenuState.PhotoGetter;
                 break;
 
             case PhotoGetter:
-                if(message.equals("Back"))
-                    modelState = ModelState.MainMenu;
                 break;
 
             case GamesMenu:
-                if(message.equals("Back"))
-                    modelState = ModelState.MainMenu;
                 if(message.equals("Cities"))
-                    modelState = ModelState.CitiesGame;
+                    menuState = MenuState.CitiesGame;
                 break;
 
             case CitiesGame:
-                if(message.equals("Back"))
-                    modelState = ModelState.MainMenu;
+
                 break;
+
         }
     }
 
+    void getBack(String message){
+        if(message.equals("Back"))
+            menuState = MenuState.MainMenu;
+    }
 }
