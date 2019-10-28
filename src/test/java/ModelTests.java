@@ -7,7 +7,7 @@ public class ModelTests {
     @Test
     public void ChangeStateFromMainToTools(){
         Model model = new Model();
-        model.updateModel("Tools");
+        model.updateState("Tools");
         Assert.assertEquals(ModelState.ToolsMenu,model.getModelState());
     }
 }

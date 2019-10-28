@@ -8,7 +8,7 @@ public class Model {
         return modelState;
     }
 
-    public void updateModel(String message){
+    public void updateState(String message){
         switch (modelState){
             case MainMenu:
                 if(message.equals("Tools"))

@@ -10,11 +10,10 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class TelegramBot extends TelegramLongPollingBot {
+
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
     private Model model = new Model();
     private CitiesGame citiesGame;
@@ -34,7 +33,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
-        model.updateModel(message.getText());
+        String messageText = message.getText();
+        model.updateState(messageText);
         logger.info(model.getModelState().toString());
 
         if (message != null && message.hasText()) {
@@ -52,42 +52,27 @@ public class TelegramBot extends TelegramLongPollingBot {
                     break;
 
                 case PhotoGetter:
-                    if(message.getText().equals("PhotoGetter")) {
+                    if(messageText.equals("PhotoGetter")) {
                         sendMessage(message,"Ты в PhotoGetter.");
                         break;
                     }
                     try {
-                        sendPhoto(message, PhotoGetter.getPhotoURL(message.getText()));
+                        sendPhoto(message, PhotoGetter.getPhotoURL(messageText));
                     } catch (Exception e) {
                         sendMessage(message, "Image not found");
                     }
                     break;
 
                 case CitiesGame:
-                    if(message.getText().equals("Cities")) {
-                        sendMessage(message,"Ты в CitiesGame. Назови любой город: ");
+                    if (messageText.equals("Cities")) {
+                        sendMessage(message, "Ты в CitiesGame. Назови любой город: ");
                         citiesGame = new CitiesGame();
                         break;
                     }
-                    sendMessage(message,citiesGame.getAnswer(message.getText()));
+                    sendMessage(message, citiesGame.getAnswer(messageText));
                     break;
             }
         }
-            /*switch (message.getText()){
-                case "/start":
-                    sendMessage(message,"Hello");
-                    break;
-                case"/photo":
-                    sendPhoto(message, "https://pixabay.com/get/55e2dc414351ae14f6da8c7dda79367a153dd9e451516c4870287ad3924bc650b0_1280.jpg");
-                    break;
-                default:
-                    try {
-                        System.out.println(message.getText());
-                        sendPhoto(message, PhotoGetter.getPhotoURL(message.getText()));
-                    } catch (Exception e) {
-                        sendMessage(message, "Image not found");
-                    }
-            }*/
     }
 
     public void sendMessage(Message message, String text){
