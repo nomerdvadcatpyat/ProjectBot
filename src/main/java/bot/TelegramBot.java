@@ -35,28 +35,22 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
         String messageText = message.getText();
+
+
+        MenuState lastState = model.getMenuState();
         model.updateState(messageText);
+        if(lastState != model.getMenuState())
+            sendMessage(message,model.getStateMessage());
+
         logger.info(model.getMenuState().toString());
+
+
 
         if (message != null && message.hasText()) {
             switch (model.getMenuState()) {
-                case MainMenu:
-                    sendMessage(message, "Ты в MainMenu. Доступные опции: \n1)Tools \n2)Games");
-                    break;
-
-                case ToolsMenu:
-                    sendMessage(message, "Ты в ToolsMenu. Доступные опции: \n1)PhotoGetter");
-                    break;
-
-                case GamesMenu:
-                    sendMessage(message, "Ты в GamesMenu. Доступные игры: \n1)Cities");
-                    break;
-
                 case PhotoGetter:
-                    if(messageText.equals("PhotoGetter")) {
-                        sendMessage(message,"Ты в PhotoGetter.");
+                    if(messageText.equals("PhotoGetter"))
                         break;
-                    }
                     try {
                         sendPhoto(message, PhotoGetter.getPhotoURL(messageText));
                     } catch (Exception e) {
@@ -66,21 +60,10 @@ public class TelegramBot extends TelegramLongPollingBot {
 
                 case CitiesGame:
                     if (messageText.equals("Cities")) {
-                        sendMessage(message, "Ты в CitiesGame. Назови любой город: ");
                         citiesGame = new CitiesGame();
                         break;
                     }
                     sendMessage(message, citiesGame.getAnswer(messageText));
-
-                    /*if(citiesGame.getGameState() == GameState.Lose || citiesGame.getGameState() == GameState.Win) {
-                        sendMessage(message, "Начнем новую игру? \n1)Да\n2)Нет");
-                        if(messageText.equals("Да")) {
-                            citiesGame = new CitiesGame();
-                            break;
-                        } else if(messageText.equals("Нет"))
-                            break;
-                    } */
-                    break;
             }
         }
     }
@@ -117,6 +100,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "811627871:AAHuQIXhUgMVLCBsuY2gmEkcct1zbh9b67o";
+        return "";
     }
 }

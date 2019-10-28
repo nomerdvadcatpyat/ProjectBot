@@ -31,6 +31,9 @@ public class CitiesGame {
 
 
     public String getAnswer(String message){
+        if(gameState == GameState.Lose || gameState == GameState.Win)
+            return "Вы закончили играть. Напишите Cities для новой игры или Main для выхода в главное меню.";
+
         logger.info("В начале - "+ lastWord);
 
         message = message.toLowerCase();

@@ -2,14 +2,14 @@ package bot;
 
 public class Model {
 
-    private MenuState menuState = MenuState.MainMenu;
+    private MenuState menuState;
 
     public MenuState getMenuState(){
         return menuState;
     }
 
     public void updateState(String message){
-        getBack(message);
+        goToMain(message);
         switch (menuState){
             case MainMenu:
                 if(message.equals("Tools"))
@@ -32,14 +32,28 @@ public class Model {
                 break;
 
             case CitiesGame:
-
                 break;
-
         }
     }
 
-    void getBack(String message){
-        if(message.equals("Back"))
+    public String getStateMessage(){
+        switch (menuState){
+            case MainMenu:
+                return "Ты в MainMenu. Доступные опции: \n1)Tools \n2)Games";
+            case ToolsMenu:
+                return "Ты в ToolsMenu. Доступные опции: \n1)PhotoGetter";
+            case GamesMenu:
+                return "Ты в GamesMenu. Доступные игры: \n1)Cities";
+            case CitiesGame:
+                return "Ты в CitiesGame. Назови любой город: ";
+            case PhotoGetter:
+                return "Ты в PhotoGetter.";
+        }
+        return "";
+    }
+
+    void goToMain(String message){
+        if(message.equals("Main"))
             menuState = MenuState.MainMenu;
     }
 }
