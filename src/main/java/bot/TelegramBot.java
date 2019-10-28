@@ -32,15 +32,14 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-            Message message = update.getMessage();
+        Message message = update.getMessage();
+
         if (message != null && message.hasText()) {
-
             String messageText = message.getText();
-
             MenuState lastState = model.getMenuState();
             model.updateState(messageText);
             if(lastState != model.getMenuState())
-                sendMessage(message,model.getStateMessage());
+                sendMessage(message,model.getStateHelloMessage());
 
             logger.info(model.getMenuState().toString());
 
@@ -98,6 +97,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "";
+        return "811627871:AAGPmmHpbufDY-2pd8YhhrnWiWJI_EGDUvo";
     }
 }

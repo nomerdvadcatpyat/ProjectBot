@@ -36,7 +36,7 @@ public class Model {
         }
     }
 
-    public String getStateMessage(){
+    public String getStateHelloMessage(){
         switch (menuState){
             case MainMenu:
                 return "Ты в MainMenu. Доступные опции: \n1)Tools \n2)Games";
