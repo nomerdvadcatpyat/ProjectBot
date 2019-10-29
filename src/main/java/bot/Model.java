@@ -63,7 +63,8 @@ public class Model {
                 if (message.equals("Shrek"))
                     return new File(System.getProperty("user.dir") +
                             File.separator + "src" + File.separator + "main" +
-                            File.separator + "resources" + File.separator + "Shrek.gif").getAbsolutePath();  //пока нет
+                            File.separator + "resources" + File.separator + "Shrek.gif").getAbsolutePath();
+                break;
         }
         return "";
     }

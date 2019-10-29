@@ -13,12 +13,8 @@ public class CitiesGame {
     private Random rnd = new Random();
     private GameState gameState = GameState.InGame;
 
-    public GameState getGameState() {
-        return gameState;
-    }
-
     private String lastWord;
-
+    private char lastC;
 
     public CitiesGame() {
         data = Parser.parse(new File(System.getProperty("user.dir") +
@@ -31,52 +27,56 @@ public class CitiesGame {
 
 
     public String getAnswer(String message){
-        //Если первый город придет ошибочный - бот примет его
-        //Добавить изменение ожидаемой первой буквы если город закончился на й ы ь ъ ё
-        //Написать тесты
-        if(gameState == GameState.Lose || gameState == GameState.Win)
-            return "Вы закончили играть. Напишите Cities для новой игры или Main для выхода в главное меню.";
+
+        if(gameState == GameState.Lose)
+            return "Вы проиграли. Напишите Cities для новой игры или Main для выхода в главное меню.";
+        if(gameState == GameState.Win)
+            return "Вы выиграли. Напишите Cities для новой игры или Main для выхода в главное меню.";
 
         logger.info("В начале - "+ lastWord);
 
         message = message.toLowerCase();
         char firstC = message.charAt(0);
+        logger.info("message - " + message);
 
-        if(lastWord == null)
-            if (!data.containsKey(firstC) || !data.get(firstC).contains(message)){
+        // проверка введенного слова
+        logger.info("firstC " + firstC + " lastC " + lastC);
+            if (lastWord != null && firstC != lastC)
+                return "Вы проиграли";
+            if(!data.containsKey(firstC) || !data.get(firstC).contains(message)) {
+                logger.info("Проигрыш - " + lastWord);
                 gameState = GameState.Lose;
-                return "Вы проиграли.";
-            }
-
-        if(lastWord != null) {
-            if (firstC != lastWord.charAt(lastWord.length() - 1) || !data.get(firstC).contains(message)) {
-                //region Логи
-                logger.info(firstC + " " + lastWord.charAt(lastWord.length() - 1) + " " + data.containsKey(firstC));
-                if (data.containsKey(firstC))
-                    logger.info(data.get(firstC).contains(message) + "");
-                //endregion
-                gameState = GameState.Lose;
-                return "Вы проиграли.";
-            }
-            data.get(firstC).remove(message);
+                return "Вы проиграли";
         }
+        data.get(firstC).remove(message);
 
-        char lastC = message.charAt(message.length() - 1);
-        String res="Я проиграл.";
+        lastC = updateLastChar(message);
+        logger.info("last char - " + lastC);
 
+        //ответ бота
+        String res="Я проиграл";
         if(!data.isEmpty() && data.containsKey(lastC) && !data.get(lastC).isEmpty()){
             int index = rnd.nextInt(data.get(lastC).size());
             res = data.get(lastC).get(index);
             data.get(lastC).remove(res);
             res = res.toUpperCase().charAt(0) + res.substring(1);
             lastWord = res;
+            lastC = updateLastChar(lastWord);
+            logger.info("В конце - " + lastWord);
+            logger.info("last char - " + lastC);
         }
-
         if(res.equals("Я проиграл"))
             gameState = GameState.Win;
-
-        logger.info("В конце - " + lastWord);
-
         return res;
+    }
+
+    private char updateLastChar(String message){
+        char lastC = message.charAt(message.length() - 1);
+        int i = 1;
+        while(lastC == 'й' || lastC =='ы' || lastC =='ь' || lastC =='ъ' || lastC =='ё') {
+            lastC = message.charAt(message.length() - i);
+            i++;
+        }
+        return lastC;
     }
 }

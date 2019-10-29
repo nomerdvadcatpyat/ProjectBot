@@ -48,6 +48,15 @@ public class MenuStateTests {
     }
 
     @Test
+    public void FromCitiesGameToMain(){
+        model.updateMenuState("Main");
+        model.updateMenuState("Games");
+        model.updateMenuState("Cities");
+        model.updateMenuState("Main");
+        Assert.assertEquals(MenuState.MainMenu,model.getMenuState());
+    }
+
+    @Test
     public void FromGamesToTools(){
         model.updateMenuState("Main");
         model.updateMenuState("Games");

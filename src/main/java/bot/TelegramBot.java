@@ -42,11 +42,20 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendMessage(message ,model.getStateHelloMessage());
             String answer = model.getStateAnswer(messageText);
             if(!answer.isEmpty()) {
-                if (model.getMenuState() == MenuState.MainMenu)
-                    sendAnimationFromDisk(message, answer);
-                if (model.getMenuState() == MenuState.PhotoGetter)
-                    sendPhotoByURL(message, answer);
-                else sendMessage(message, answer);
+                switch (model.getMenuState()) {
+                    case MainMenu:
+                        logger.info("sendAnim");
+                        sendAnimationFromDisk(message, answer);
+                        break;
+
+                    case PhotoGetter:
+                        sendPhotoByURL(message, answer);
+                        break;
+
+                    default:
+                        logger.info("default");
+                        sendMessage(message, answer);
+                }
             }
             logger.info(model.getMenuState().toString());
         }
