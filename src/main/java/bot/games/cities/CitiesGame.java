@@ -49,14 +49,12 @@ public class CitiesGame {
             }
 
         if(lastWord != null) {
-            if (firstC != lastWord.charAt(lastWord.length() - 1) || !data.containsKey(firstC) || !data.get(firstC).contains(message)) {
-
-                //логи
+            if (firstC != lastWord.charAt(lastWord.length() - 1) || !data.get(firstC).contains(message)) {
+                //region Логи
                 logger.info(firstC + " " + lastWord.charAt(lastWord.length() - 1) + " " + data.containsKey(firstC));
                 if (data.containsKey(firstC))
                     logger.info(data.get(firstC).contains(message) + "");
-                //логи
-
+                //endregion
                 gameState = GameState.Lose;
                 return "Вы проиграли.";
             }
