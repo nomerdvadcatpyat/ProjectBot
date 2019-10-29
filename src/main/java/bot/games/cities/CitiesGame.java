@@ -44,21 +44,19 @@ public class CitiesGame {
 
         if(lastWord != null) {
             if (firstC != lastWord.charAt(lastWord.length() - 1) || !data.get(firstC).contains(message)) {
-
-                //логи
+                //region Логи
                 logger.info(firstC + " " + lastWord.charAt(lastWord.length() - 1) + " " + data.containsKey(firstC));
                 if (data.containsKey(firstC))
                     logger.info(data.get(firstC).contains(message) + "");
-                //логи
-
+                //endregion
                 gameState = GameState.Lose;
-                return "Вы проиграли.";
+                return "Вы проиграли";
             }
             data.get(firstC).remove(message);
         }
 
         char lastC = message.charAt(message.length() - 1);
-        String res="Я проиграл.";
+        String res="Я проиграл";
 
         if(!data.isEmpty() && !data.get(lastC).isEmpty()){
             int index = rnd.nextInt(data.get(lastC).size());

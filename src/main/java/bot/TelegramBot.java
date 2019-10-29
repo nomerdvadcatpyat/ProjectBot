@@ -3,12 +3,14 @@ package bot;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 public class TelegramBot extends TelegramLongPollingBot {
@@ -30,28 +32,30 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         logger.info("Чат id - " +update.getMessage().getChatId().toString());
-        String chatID = update.getMessage().getChatId().toString();
+
         Message message = update.getMessage();
         if (message != null && message.hasText()) {
             String messageText = message.getText();
             MenuState lastState = model.getMenuState();
             model.updateMenuState(messageText);
             if(lastState != model.getMenuState())
-                sendMessage(chatID,model.getStateHelloMessage());
+                sendMessage(message ,model.getStateHelloMessage());
             String answer = model.getStateAnswer(messageText);
             if(!answer.isEmpty()) {
+                if (model.getMenuState() == MenuState.MainMenu)
+                    sendAnimationFromDisk(message, answer);
                 if (model.getMenuState() == MenuState.PhotoGetter)
-                    sendPhoto(message, answer);
-                else sendMessage(chatID,answer);
+                    sendPhotoByURL(message, answer);
+                else sendMessage(message, answer);
             }
             logger.info(model.getMenuState().toString());
         }
     }
 
-    public void sendMessage(String chatId, String text){
+    private void sendMessage(Message message, String text){
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
-        sendMessage.setChatId(chatId);
+        sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setText(text);
         try {
             execute(sendMessage);
@@ -60,7 +64,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendPhoto(Message message, String url){
+    private void sendPhotoByURL(Message message, String url){
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setPhoto(url);
         sendPhoto.setChatId(message.getChatId().toString());
@@ -71,6 +75,26 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    private void sendAnimationByURL(Message message, String url){
+        SendAnimation sendAnimation = new SendAnimation();
+        sendAnimation.setAnimation(url);
+        sendAnimation(message, sendAnimation);
+    }
+
+    private void sendAnimationFromDisk(Message message, String path){
+        SendAnimation sendAnimation = new SendAnimation();
+        sendAnimation.setAnimation(new File(path));
+        sendAnimation(message, sendAnimation);
+    }
+
+    private void sendAnimation(Message message, SendAnimation sendAnimation){
+        sendAnimation.setChatId(message.getChatId().toString());
+        try {
+            execute(sendAnimation);
+        } catch (TelegramApiException e) {
+            logger.info(e.getMessage());
+        }
+    }
 
     @Override
     public String getBotUsername() {

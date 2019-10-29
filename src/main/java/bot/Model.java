@@ -3,6 +3,7 @@ package bot;
 import bot.games.cities.CitiesGame;
 import bot.tools.PhotoGetter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -49,14 +50,20 @@ public class Model {
                 return citiesGame.getAnswer(message);
 
             case PhotoGetter:
-                if(message.equals("PhotoGetter"))
+                if (message.equals("PhotoGetter"))
                     break;
                 try {
                     return PhotoGetter.getPhotoURL(message);
                 } catch (IOException e){
                     logger.info(e.getMessage());
                 }
+                break;
 
+            case MainMenu:
+                if (message.equals("Shrek"))
+                    return new File(System.getProperty("user.dir") +
+                            File.separator + "src" + File.separator + "main" +
+                            File.separator + "resources" + File.separator + "Shrek.gif").getAbsolutePath();  //пока нет
         }
         return "";
     }
