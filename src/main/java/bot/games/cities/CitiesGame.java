@@ -42,8 +42,14 @@ public class CitiesGame {
         message = message.toLowerCase();
         char firstC = message.charAt(0);
 
+        if(lastWord == null)
+            if (!data.containsKey(firstC) || !data.get(firstC).contains(message)){
+                gameState = GameState.Lose;
+                return "Вы проиграли.";
+            }
+
         if(lastWord != null) {
-            if (firstC != lastWord.charAt(lastWord.length() - 1) || !data.get(firstC).contains(message)) {
+            if (firstC != lastWord.charAt(lastWord.length() - 1) || !data.containsKey(firstC) || !data.get(firstC).contains(message)) {
 
                 //логи
                 logger.info(firstC + " " + lastWord.charAt(lastWord.length() - 1) + " " + data.containsKey(firstC));
@@ -60,7 +66,7 @@ public class CitiesGame {
         char lastC = message.charAt(message.length() - 1);
         String res="Я проиграл.";
 
-        if(!data.isEmpty() && !data.get(lastC).isEmpty()){
+        if(!data.isEmpty() && data.containsKey(lastC) && !data.get(lastC).isEmpty()){
             int index = rnd.nextInt(data.get(lastC).size());
             res = data.get(lastC).get(index);
             data.get(lastC).remove(res);
