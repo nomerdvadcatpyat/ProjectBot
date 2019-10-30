@@ -40,7 +40,7 @@ public class Model {
     }
 
 
-    public String getStateAnswer(String message){
+    public String getStateAnswer(String message) throws IOException {
         switch (menuState){
             case CitiesGame:
                 if (message.equals("Cities")) {
@@ -52,12 +52,7 @@ public class Model {
             case PhotoGetter:
                 if (message.equals("PhotoGetter"))
                     break;
-                try {
                     return PhotoGetter.getPhotoURL(message);
-                } catch (IOException e){
-                    logger.info(e.getMessage());
-                }
-                break;
 
             case MainMenu:
                 if (message.equals("Shrek"))

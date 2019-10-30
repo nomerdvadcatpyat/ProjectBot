@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 public class TelegramBot extends TelegramLongPollingBot {
@@ -40,7 +41,21 @@ public class TelegramBot extends TelegramLongPollingBot {
             model.updateMenuState(messageText);
             if(lastState != model.getMenuState())
                 sendMessage(message ,model.getStateHelloMessage());
-            String answer = model.getStateAnswer(messageText);
+            String answer;
+            try {
+                answer = model.getStateAnswer(messageText);
+            }
+            catch (Exception e){
+                answer = null;
+                switch (model.getMenuState()) {
+                    case PhotoGetter:
+                        sendMessage(message, "Image not found");
+                        break;
+                    default:
+                        logger.info("default");
+                        sendMessage(message, "Error");
+                }
+            }
             if(!answer.isEmpty()) {
                 switch (model.getMenuState()) {
                     case MainMenu:
@@ -107,7 +122,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "KavoIShoBot";
+        return "OOPContentBot";
     }
 
     @Override
