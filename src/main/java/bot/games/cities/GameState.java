@@ -1,7 +1,7 @@
 package bot.games.cities;
 
 public enum GameState {
-        InGame,
-        Lose,
-        Win
+        IN_GAME,
+        LOSE,
+        WIN
 }

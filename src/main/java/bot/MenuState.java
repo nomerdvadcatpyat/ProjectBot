@@ -1,9 +1,9 @@
 package bot;
 
 public enum MenuState {
-    MainMenu,
-    ToolsMenu,
-    PhotoGetter,
-    GamesMenu,
-    CitiesGame
+    MAIN_MENU,
+    TOOLS_MENU,
+    PHOTO_GETTER,
+    GAMES_MENU,
+    CITIES_GAME
 }

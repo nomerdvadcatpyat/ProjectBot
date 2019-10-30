@@ -1,7 +1,5 @@
 package bot;
 
-import bot.Model;
-import bot.MenuState;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,31 +10,31 @@ public class MenuStateTests {
     @Test
     public void MainMenuTest(){
         model.updateMenuState("Main");
-        Assert.assertEquals(MenuState.MainMenu,model.getMenuState());
+        Assert.assertEquals(MenuState.MAIN_MENU,model.getMenuState());
     }
 
     @Test
     public void MainMenuTest2(){
         model.updateMenuState("/start");
-        Assert.assertEquals(MenuState.MainMenu,model.getMenuState());
+        Assert.assertEquals(MenuState.MAIN_MENU,model.getMenuState());
     }
 
     @Test
     public void FromMainToToolsAndGames(){
         model.updateMenuState("Main");
         model.updateMenuState("Tools");
-        Assert.assertEquals(MenuState.ToolsMenu,model.getMenuState());
+        Assert.assertEquals(MenuState.TOOLS_MENU,model.getMenuState());
         model.updateMenuState("Main");
-        Assert.assertEquals(MenuState.MainMenu,model.getMenuState());
+        Assert.assertEquals(MenuState.MAIN_MENU,model.getMenuState());
         model.updateMenuState("Games");
-        Assert.assertEquals(MenuState.GamesMenu,model.getMenuState());
+        Assert.assertEquals(MenuState.GAMES_MENU,model.getMenuState());
     }
 
     @Test
     public void FromMainToCitiesGame(){
         model.updateMenuState("Main");
         model.updateMenuState("Cities");
-        Assert.assertEquals(MenuState.MainMenu,model.getMenuState());
+        Assert.assertEquals(MenuState.MAIN_MENU,model.getMenuState());
     }
 
     @Test
@@ -44,7 +42,7 @@ public class MenuStateTests {
         model.updateMenuState("Main");
         model.updateMenuState("Games");
         model.updateMenuState("Cities");
-        Assert.assertEquals(MenuState.CitiesGame,model.getMenuState());
+        Assert.assertEquals(MenuState.CITIES_GAME,model.getMenuState());
     }
 
     @Test
@@ -53,7 +51,7 @@ public class MenuStateTests {
         model.updateMenuState("Games");
         model.updateMenuState("Cities");
         model.updateMenuState("Main");
-        Assert.assertEquals(MenuState.MainMenu,model.getMenuState());
+        Assert.assertEquals(MenuState.MAIN_MENU,model.getMenuState());
     }
 
     @Test
@@ -61,7 +59,7 @@ public class MenuStateTests {
         model.updateMenuState("Main");
         model.updateMenuState("Games");
         model.updateMenuState("Tools");
-        Assert.assertEquals(MenuState.GamesMenu,model.getMenuState());
+        Assert.assertEquals(MenuState.GAMES_MENU,model.getMenuState());
     }
 
 }

@@ -1,7 +1,7 @@
 package games.cities;
 
-import bot.Model;
 import bot.games.cities.CitiesGame;
+import bot.games.cities.GameState;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,7 +12,8 @@ public class CitiesGameTests {
     @Test
     public void EmptyData(){
         CitiesGame citiesGame = new CitiesGame(new HashMap<>());
-        Assert.assertEquals("Вы проиграли",citiesGame.getAnswer("Москва"));
+        citiesGame.getAnswer("Москва");
+        Assert.assertEquals(GameState.LOSE,citiesGame.getGameState());
     }
 
     @Test
@@ -22,7 +23,8 @@ public class CitiesGameTests {
         list.add("архангельск");
         data.put('а',list);
         CitiesGame citiesGame = new CitiesGame(data);
-        Assert.assertEquals("Я проиграл",citiesGame.getAnswer("Архангельск"));
+        citiesGame.getAnswer("Архангельск");
+        Assert.assertEquals(GameState.WIN,citiesGame.getGameState());
     }
 
     @Test
@@ -34,14 +36,14 @@ public class CitiesGameTests {
         list.add("архангельск");
         data.put('а',list);
         CitiesGame citiesGame = new CitiesGame(data);
-        citiesGame.getAnswer("Москва");
-        Assert.assertEquals("Вы проиграли",citiesGame.getAnswer("курган"));
+        Assert.assertEquals("Архангельск", citiesGame.getAnswer("Москва"));
     }
 
     @Test
     public void WrongCity(){
         CitiesGame citiesGame = new CitiesGame();
-        Assert.assertEquals("Вы проиграли",citiesGame.getAnswer("ФЫВФЫАФЫВ"));
+        citiesGame.getAnswer("ФЫВФЫАФЫВ");
+        Assert.assertEquals(GameState.LOSE,citiesGame.getGameState());
     }
 
     @Test
@@ -67,6 +69,7 @@ public class CitiesGameTests {
         data.put('н',list);
         CitiesGame citiesGame = new CitiesGame(data);
         citiesGame.getAnswer("новосибирск");
-        Assert.assertEquals("Я проиграл", citiesGame.getAnswer("невьянск"));
+        citiesGame.getAnswer("невьянск");
+        Assert.assertEquals(GameState.WIN,citiesGame.getGameState());
     }
 }

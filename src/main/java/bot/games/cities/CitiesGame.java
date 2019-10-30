@@ -11,7 +11,11 @@ public class CitiesGame {
     private static final Logger logger = Logger.getLogger(CitiesGame.class.getName());
     private static HashMap<Character, ArrayList<String>> data;
     private Random rnd = new Random();
-    private GameState gameState = GameState.InGame;
+    private GameState gameState = GameState.IN_GAME;
+
+    public GameState getGameState() {
+        return gameState;
+    }
 
     private String lastWord;
     private char lastC;
@@ -28,9 +32,9 @@ public class CitiesGame {
 
     public String getAnswer(String message){
 
-        if(gameState == GameState.Lose)
+        if(gameState == GameState.LOSE)
             return "Вы проиграли. Напишите Cities для новой игры или Main для выхода в главное меню.";
-        if(gameState == GameState.Win)
+        if(gameState == GameState.WIN)
             return "Вы выиграли. Напишите Cities для новой игры или Main для выхода в главное меню.";
 
         logger.info("В начале - "+ lastWord);
@@ -45,7 +49,7 @@ public class CitiesGame {
                 return "Вы проиграли";
             if(!data.containsKey(firstC) || !data.get(firstC).contains(message)) {
                 logger.info("Проигрыш - " + lastWord);
-                gameState = GameState.Lose;
+                gameState = GameState.LOSE;
                 return "Вы проиграли";
         }
         data.get(firstC).remove(message);
@@ -66,7 +70,7 @@ public class CitiesGame {
             logger.info("last char - " + lastC);
         }
         if(res.equals("Я проиграл"))
-            gameState = GameState.Win;
+            gameState = GameState.WIN;
         return res;
     }
 
