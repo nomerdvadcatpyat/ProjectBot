@@ -38,24 +38,6 @@ public class Model {
     public void updateMenuState(String message){
         toMainMenu(message);
         toBackMenu(message);
-        /*switch (menuState){
-            case MainMenu:
-                if(message.equals("Tools"))
-                    menuState = MenuState.ToolsMenu;
-                if(message.equals("Games"))
-                    menuState = MenuState.GamesMenu;
-                break;
-
-            case ToolsMenu:
-                if(message.equals("PhotoGetter"))
-                    menuState = MenuState.PhotoGetter;
-                break;
-
-            case GamesMenu:
-                if(message.equals("Cities"))
-                    menuState = MenuState.CitiesGame;
-                break;
-        }*/
         StateData stateData = statesInfo.get(menuState);
         if (stateData.getChilds() != null) {
             for (MenuState child : stateData.getChilds()) {
@@ -120,7 +102,7 @@ public class Model {
             if (data.getParent() != null) {
                 String parentName = statesInfo.get(data.getParent()).getName();
                 buttons2.add(new InlineKeyboardButton().setText("< Back").setCallbackData(parentName));
-                buttons2.add(new InlineKeyboardButton().setText("Main").setCallbackData("/main"));
+                buttons2.add(new InlineKeyboardButton().setText("Main").setCallbackData(MenuState.MAIN_MENU.getName()));
             }
             buttons.add(buttons1);
             buttons.add(buttons2);
