@@ -11,11 +11,12 @@ public class CitiesGame {
     private static final Logger logger = Logger.getLogger(CitiesGame.class.getName());
     private static HashMap<Character, ArrayList<String>> data;
     private Random rnd = new Random();
-    private GameState gameState = GameState.IN_GAME;
 
     public GameState getGameState() {
         return gameState;
     }
+
+    private GameState gameState = GameState.IN_GAME;
 
     private String lastWord;
     private char lastC;
@@ -33,9 +34,9 @@ public class CitiesGame {
     public String getAnswer(String message){
 
         if(gameState == GameState.LOSE)
-            return "Вы проиграли. Напишите Cities для новой игры или Main для выхода в главное меню.";
+            return "Вы проиграли. Напишите Cities для новой игры или Main Menu для выхода в главное меню.";
         if(gameState == GameState.WIN)
-            return "Вы выиграли. Напишите Cities для новой игры или Main для выхода в главное меню.";
+            return "Вы выиграли. Напишите Cities для новой игры или Main Menu для выхода в главное меню.";
 
         logger.info("В начале - "+ lastWord);
 

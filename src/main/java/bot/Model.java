@@ -2,9 +2,12 @@ package bot;
 
 import bot.games.cities.CitiesGame;
 import bot.tools.PhotoGetter;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class Model {
@@ -12,6 +15,21 @@ public class Model {
     private MenuState menuState;
     private CitiesGame citiesGame;
     private static final Logger logger = Logger.getLogger(Model.class.getName());
+    private HashMap<MenuState, StateData> statesInfo = new HashMap<>();
+
+    public Model(){ //мда...
+        //menuState = MenuState.MainMenu;
+        statesInfo.put(MenuState.MAIN_MENU, new StateData(MenuState.MAIN_MENU.getName(), "Здесь можно выбрать нужную категорию",
+                new ArrayList<>(Arrays.asList(MenuState.TOOLS_MENU, MenuState.GAMES_MENU)), null));
+        statesInfo.put(MenuState.TOOLS_MENU, new StateData(MenuState.TOOLS_MENU.getName(), "Здесь можно воспользоваться разными сервисами",
+                new ArrayList<>(Arrays.asList(MenuState.PHOTO_GETTER)), MenuState.MAIN_MENU));
+        statesInfo.put(MenuState.GAMES_MENU, new StateData(MenuState.GAMES_MENU.getName(), "Здесть можно выбрать игру",
+                new ArrayList<>(Arrays.asList(MenuState.CITIES_GAME)), MenuState.MAIN_MENU));
+        statesInfo.put(MenuState.PHOTO_GETTER, new StateData(MenuState.PHOTO_GETTER.getName(), "Скажи, что должно быть на картинке, и я поищу что-нибудь подобное",
+                null, MenuState.TOOLS_MENU));
+        statesInfo.put(MenuState.CITIES_GAME, new StateData(MenuState.CITIES_GAME.getName(), "Назови город, и начнем", null, MenuState.GAMES_MENU));
+        setupInlineKeyboards();
+    }
 
     public MenuState getMenuState(){
         return menuState;
@@ -19,23 +37,31 @@ public class Model {
 
     public void updateMenuState(String message){
         toMainMenu(message);
-        switch (menuState){
-            case MAIN_MENU:
+        toBackMenu(message);
+        /*switch (menuState){
+            case MainMenu:
                 if(message.equals("Tools"))
-                    menuState = MenuState.TOOLS_MENU;
+                    menuState = MenuState.ToolsMenu;
                 if(message.equals("Games"))
-                    menuState = MenuState.GAMES_MENU;
+                    menuState = MenuState.GamesMenu;
                 break;
 
-            case TOOLS_MENU:
-                if(message.equals("PHOTO_GETTER"))
-                    menuState = MenuState.PHOTO_GETTER;
+            case ToolsMenu:
+                if(message.equals("PhotoGetter"))
+                    menuState = MenuState.PhotoGetter;
                 break;
 
-            case GAMES_MENU:
+            case GamesMenu:
                 if(message.equals("Cities"))
-                    menuState = MenuState.CITIES_GAME;
+                    menuState = MenuState.CitiesGame;
                 break;
+        }*/
+        StateData stateData = statesInfo.get(menuState);
+        if (stateData.getChilds() != null) {
+            for (MenuState child : stateData.getChilds()) {
+                if (child.getName().equals(message))
+                    menuState = child;
+            }
         }
     }
 
@@ -43,14 +69,14 @@ public class Model {
     public String getStateAnswer(String message) throws IOException {
         switch (menuState){
             case CITIES_GAME:
-                if (message.equals("Cities")) {
+                if (message.equals(MenuState.CITIES_GAME.getName())) {
                     citiesGame = new CitiesGame();
                     break;
                 }
                 return citiesGame.getAnswer(message);
 
             case PHOTO_GETTER:
-                if (message.equals("PHOTO_GETTER"))
+                if (message.equals(MenuState.PHOTO_GETTER.getName()))
                     break;
                     return PhotoGetter.getPhotoURL(message);
 
@@ -64,24 +90,48 @@ public class Model {
         return "";
     }
 
-    public String getStateHelloMessage(){
-        switch (menuState){
-            case MAIN_MENU:
-                return "Ты в MAIN_MENU. Доступные опции: \n1)Tools \n2)Games";
-            case TOOLS_MENU:
-                return "Ты в TOOLS_MENU. Доступные опции: \n1)PHOTO_GETTER";
-            case GAMES_MENU:
-                return "Ты в GAMES_MENU. Доступные игры: \n1)Cities";
-            case CITIES_GAME:
-                return "Ты в CITIES_GAME. Назови любой город: ";
-            case PHOTO_GETTER:
-                return "Ты в PHOTO_GETTER.";
-        }
-        return "";
+    public String getStateInfoText(){
+        return statesInfo.get(menuState).getInfoText();
     }
 
     private void toMainMenu(String message){
-        if(message.equals("Main") || message.equals("/start"))
+        if(message.equals(MenuState.MAIN_MENU.getName()) || message.equals("/start"))
             menuState = MenuState.MAIN_MENU;
+    }
+
+    private void toBackMenu(String message){
+        MenuState parent = statesInfo.get(menuState).getParent();
+        if(parent != null && (message.equals(parent.getName()) || message.equals("Back")))
+            menuState = parent;
+    }
+
+    private void setupInlineKeyboards(){
+        for (Map.Entry<MenuState, StateData> entry : statesInfo.entrySet()){
+            StateData data = entry.getValue();
+            List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
+            List<InlineKeyboardButton> buttons1 = new ArrayList<>();
+            List<InlineKeyboardButton> buttons2 = new ArrayList<>();
+            if (data.getChilds() != null) {
+                for (MenuState child : data.getChilds()) {
+                    String childName = statesInfo.get(child).getName();
+                    buttons1.add(new InlineKeyboardButton().setText(childName).setCallbackData(childName));
+                }
+            }
+            if (data.getParent() != null) {
+                String parentName = statesInfo.get(data.getParent()).getName();
+                buttons2.add(new InlineKeyboardButton().setText("< Back").setCallbackData(parentName));
+                buttons2.add(new InlineKeyboardButton().setText("Main").setCallbackData("/main"));
+            }
+            buttons.add(buttons1);
+            buttons.add(buttons2);
+            InlineKeyboardMarkup markupKeyboard = new InlineKeyboardMarkup();
+            markupKeyboard.setKeyboard(buttons);
+            data.keyboard = new InlineKeyboardMarkup();
+            data.keyboard.setKeyboard(buttons);
+        }
+    }
+
+    public InlineKeyboardMarkup getKeyboard(){
+        return statesInfo.get(menuState).keyboard;
     }
 }

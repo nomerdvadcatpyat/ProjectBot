@@ -6,8 +6,10 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
@@ -22,7 +24,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try{
-            telegramBotsApi.registerBot(new TelegramBot());
+            var bot = new TelegramBot();
+            telegramBotsApi.registerBot(bot);
         } catch (TelegramApiException e){
             logger.info(e.getMessage());
         }
@@ -31,48 +34,95 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        logger.info("Чат id - " +update.getMessage().getChatId().toString());
 
-        Message message = update.getMessage();
-        if (message != null && message.hasText()) {
-            String messageText = message.getText();
-            MenuState lastState = model.getMenuState();
-            model.updateMenuState(messageText);
-            if(lastState != model.getMenuState())
-                sendMessage(message ,model.getStateHelloMessage());
-            String answer;
-            try {
-                answer = model.getStateAnswer(messageText);
-            }
-            catch (Exception e){
-                answer = null;
-                switch (model.getMenuState()) {
-                    case PHOTO_GETTER:
-                        sendMessage(message, "Image not found");
-                        break;
-                    default:
-                        logger.info("default");
-                        sendMessage(message, "Error");
+        if (update.hasCallbackQuery()){
+            Message message = update.getCallbackQuery().getMessage();
+            String data = update.getCallbackQuery().getData();
+            if (!data.isEmpty()){
+                MenuState lastState = model.getMenuState();
+                model.updateMenuState(data);
+                if(lastState != model.getMenuState())
+                    editMessageText(message, model.getStateInfoText());
+                String answer;
+                try {
+                    answer = model.getStateAnswer(data);
                 }
-            }
-            if(!answer.isEmpty()) {
-                switch (model.getMenuState()) {
-                    case MAIN_MENU:
-                        logger.info("sendAnim");
-                        sendAnimationFromDisk(message, answer);
-                        break;
-
-                    case PHOTO_GETTER:
-                        sendPhotoByURL(message, answer);
-                        break;
-
-                    default:
-                        logger.info("default");
-                        sendMessage(message, answer);
+                catch (Exception e){
+                    answer = null;
+                    switch (model.getMenuState()) {
+                        case PHOTO_GETTER:
+                            editMessageText(message, "Image not found");
+                            break;
+                        default:
+                            logger.info("default");
+                            editMessageText(message, "Error");
+                    }
                 }
+                if(!answer.isEmpty()) {
+                    switch (model.getMenuState()) {
+                        case MAIN_MENU:
+                            logger.info("sendAnim");
+                            sendAnimationFromDisk(message, answer);
+                            break;
+
+                        case PHOTO_GETTER:
+                            sendPhotoByURL(message, answer);
+                            break;
+
+                        default:
+                            logger.info("default");
+                            sendMessage(message, answer);
+                    }
+                }
+                logger.info(model.getMenuState().toString());
             }
-            logger.info(model.getMenuState().toString());
         }
+        else if (update.hasMessage()){
+            logger.info("Чат id - " + update.getMessage().getChatId().toString());
+            Message message = update.getMessage();
+
+            if (message != null && message.hasText()) {
+                String messageText = message.getText();
+                MenuState lastState = model.getMenuState();
+                model.updateMenuState(messageText);
+                if(lastState != model.getMenuState())
+                    sendMessage(message, model.getStateInfoText());
+                String answer;
+                try {
+                    answer = model.getStateAnswer(messageText);
+                }
+                catch (Exception e){
+                    answer = null;
+                    switch (model.getMenuState()) {
+                        case PHOTO_GETTER:
+                            sendMessage(message, "Image not found");
+                            break;
+                        default:
+                            logger.info("default");
+                            sendMessage(message, "Error");
+                    }
+                }
+                if(!answer.isEmpty()) {
+                    switch (model.getMenuState()) {
+                        case MAIN_MENU:
+                            logger.info("sendAnim");
+                            sendAnimationFromDisk(message, answer);
+                            break;
+
+                        case PHOTO_GETTER:
+                            sendPhotoByURL(message, answer);
+                            break;
+
+                        default:
+                            logger.info("default");
+                            sendMessage(message, answer);
+                    }
+                }
+                logger.info(model.getMenuState().toString());
+            }
+        }
+
+
     }
 
     private void sendMessage(Message message, String text){
@@ -80,9 +130,28 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setText(text);
+        InlineKeyboardMarkup keyboard = model.getKeyboard();
+        if (keyboard != null)
+            sendMessage.setReplyMarkup(keyboard);
         try {
             execute(sendMessage);
         }catch (TelegramApiException e){
+            logger.info(e.getMessage());
+        }
+    }
+
+    private void editMessageText(Message message, String text){
+        EditMessageText editMessageText = new EditMessageText();
+        editMessageText.enableMarkdown(true);
+        editMessageText.setChatId(message.getChatId());
+        editMessageText.setMessageId(message.getMessageId());
+        editMessageText.setText(text);
+        InlineKeyboardMarkup keyboard = model.getKeyboard();
+        if (keyboard != null)
+            editMessageText.setReplyMarkup(keyboard);
+        try {
+            execute(editMessageText);
+        }catch(TelegramApiException e){
             logger.info(e.getMessage());
         }
     }

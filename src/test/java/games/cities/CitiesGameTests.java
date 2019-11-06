@@ -61,12 +61,13 @@ public class CitiesGameTests {
     @Test
     public void BadSymbolFromBot(){
         HashMap<Character, ArrayList<String>> data = new HashMap<>();
-        ArrayList<String> list = new ArrayList<>();
-        list.add("казань");
-        data.put('к',list);
-        list.add("новосибирск");
-        list.add("невьянск");
-        data.put('н',list);
+        ArrayList<String> list1 = new ArrayList<>();
+        ArrayList<String> list2 = new ArrayList<>();
+        list1.add("казань");
+        data.put('к', list1);
+        list2.add("новосибирск");
+        list2.add("невьянск");
+        data.put('н', list2);
         CitiesGame citiesGame = new CitiesGame(data);
         citiesGame.getAnswer("новосибирск");
         citiesGame.getAnswer("невьянск");
