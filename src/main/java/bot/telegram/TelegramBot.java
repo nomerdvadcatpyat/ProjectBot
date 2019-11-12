@@ -1,5 +1,8 @@
-package bot;
+package bot.telegram;
 
+import bot.model.MenuState;
+import bot.model.Model;
+import bot.model.StateData;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -81,10 +84,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                 }
                 if(answer != null && !answer.isEmpty()) {
                     switch (model.getMenuState()) {
-                        case MAIN_MENU:
+/*Шрек                        case MAIN_MENU:
                             logger.info("sendAnim");
                             sendAnimationFromDisk(message, answer);
-                            break;
+                            break;*/
 
                         case PHOTO_GETTER:
                             sendPhotoByURL(message, answer);
@@ -146,13 +149,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private void sendAnimationByURL(Message message, String url){
-        SendAnimation sendAnimation = new SendAnimation();
-        sendAnimation.setAnimation(url);
-        sendAnimation(message, sendAnimation);
-    }
 
-    private void sendAnimationFromDisk(Message message, String path){
+/*Шрек    private void sendAnimationFromDisk(Message message, String path){
         SendAnimation sendAnimation = new SendAnimation();
         sendAnimation.setAnimation(new File(path));
         sendAnimation(message, sendAnimation);
@@ -165,7 +163,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             logger.info(e.getMessage());
         }
-    }
+    }*/
 
     private void setupInlineKeyboards(){
         for (Map.Entry<MenuState, StateData> entry : statesInfo.entrySet()){
@@ -197,14 +195,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private InlineKeyboardMarkup getKeyboard(){
         return statesInfo.get(model.getMenuState()).keyboard;
-    }
-
-    public boolean isKeyboardEnabled() {
-        return isKeyboardEnabled;
-    }
-
-    public void switchKeyboard(){
-        isKeyboardEnabled = !isKeyboardEnabled;
     }
 
     @Override

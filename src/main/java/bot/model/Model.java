@@ -1,9 +1,7 @@
-package bot;
+package bot.model;
 
 import bot.games.cities.CitiesGame;
 import bot.tools.PhotoGetter;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.io.IOException;
 import java.util.*;
@@ -66,7 +64,7 @@ public class Model {
                 if (message.equals(MenuState.PHOTO_GETTER.getName())) break;
                 return PhotoGetter.getPhotoURL(message);
 
-           /* case MAIN_MENU:
+           /*Шрек case MAIN_MENU:
                 if (message.equals("Shrek"))
                     return new File(System.getProperty("user.dir") +
                             File.separator + "src" + File.separator + "main" +

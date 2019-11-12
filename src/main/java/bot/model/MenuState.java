@@ -1,4 +1,4 @@
-package bot;
+package bot.model;
 
 public enum MenuState {
     MAIN_MENU("Main Menu"),
