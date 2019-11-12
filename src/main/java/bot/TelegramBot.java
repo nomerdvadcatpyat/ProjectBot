@@ -58,7 +58,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             editMessageText(message, "Error");
                     }
                 }
-                if(!answer.isEmpty()) {
+                if(answer!=null && !answer.isEmpty()) {
                     switch (model.getMenuState()) {
                         case MAIN_MENU:
                             logger.info("sendAnim");
@@ -80,16 +80,15 @@ public class TelegramBot extends TelegramLongPollingBot {
         else if (update.hasMessage()){
             logger.info("Чат id - " + update.getMessage().getChatId().toString());
             Message message = update.getMessage();
-
-            if (message != null && message.hasText()) {
-                String messageText = message.getText();
+            String data = message.getText();
+            if (!data.isEmpty()) {
                 MenuState lastState = model.getMenuState();
-                model.updateMenuState(messageText);
+                model.updateMenuState(data);
                 if(lastState != model.getMenuState())
                     sendMessage(message, model.getStateInfoText());
                 String answer;
                 try {
-                    answer = model.getStateAnswer(messageText);
+                    answer = model.getStateAnswer(data);
                 }
                 catch (Exception e){
                     answer = null;
@@ -102,7 +101,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             sendMessage(message, "Error");
                     }
                 }
-                if(!answer.isEmpty()) {
+                if(answer!=null && !answer.isEmpty()) {
                     switch (model.getMenuState()) {
                         case MAIN_MENU:
                             logger.info("sendAnim");
@@ -195,6 +194,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "";
+        return "983564401:AAH8_V7YRPCQH3Bi0h2a_b_Pxh8I_KQdwbw";
     }
 }

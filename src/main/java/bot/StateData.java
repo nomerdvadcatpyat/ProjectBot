@@ -8,14 +8,14 @@ public class StateData {
 
     private String name;
     private String infoText;
-    private List<MenuState> childs;
+    private List<MenuState> children;
     private MenuState parent;
     public InlineKeyboardMarkup keyboard;
 
-    public StateData(String name, String infoText, List<MenuState> childs, MenuState parent) {
+    public StateData(String name, String infoText, List<MenuState> children, MenuState parent) {
         this.name = name;
         this.infoText = infoText;
-        this.childs = childs;
+        this.children = children;
         this.parent = parent;
     }
 
@@ -27,8 +27,8 @@ public class StateData {
         return infoText;
     }
 
-    public List<MenuState> getChilds() {
-        return childs;
+    public List<MenuState> getChildren() {
+        return children;
     }
 
     public MenuState getParent() {

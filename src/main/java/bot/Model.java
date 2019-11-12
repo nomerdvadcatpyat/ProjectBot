@@ -17,7 +17,7 @@ public class Model {
     private static final Logger logger = Logger.getLogger(Model.class.getName());
     private HashMap<MenuState, StateData> statesInfo = new HashMap<>();
 
-    public Model(){ //мда...
+    public Model(){
         //menuState = MenuState.MainMenu;
         statesInfo.put(MenuState.MAIN_MENU, new StateData(MenuState.MAIN_MENU.getName(), "Здесь можно выбрать нужную категорию",
                 new ArrayList<>(Arrays.asList(MenuState.TOOLS_MENU, MenuState.GAMES_MENU)), null));
@@ -39,8 +39,9 @@ public class Model {
         toMainMenu(message);
         toBackMenu(message);
         StateData stateData = statesInfo.get(menuState);
-        if (stateData.getChilds() != null) {
-            for (MenuState child : stateData.getChilds()) {
+        if (stateData.getChildren() != null) {
+            List<MenuState> children = stateData.getChildren();
+            for (MenuState child : children) {
                 if (child.getName().equals(message))
                     menuState = child;
             }
@@ -58,16 +59,15 @@ public class Model {
                 return citiesGame.getAnswer(message);
 
             case PHOTO_GETTER:
-                if (message.equals(MenuState.PHOTO_GETTER.getName()))
-                    break;
-                    return PhotoGetter.getPhotoURL(message);
+                if (message.equals(MenuState.PHOTO_GETTER.getName())) break;
+                return PhotoGetter.getPhotoURL(message);
 
-            case MAIN_MENU:
+           /* case MAIN_MENU:
                 if (message.equals("Shrek"))
                     return new File(System.getProperty("user.dir") +
                             File.separator + "src" + File.separator + "main" +
                             File.separator + "resources" + File.separator + "Shrek.gif").getAbsolutePath();
-                break;
+                break;*/
         }
         return "";
     }
@@ -91,21 +91,21 @@ public class Model {
         for (Map.Entry<MenuState, StateData> entry : statesInfo.entrySet()){
             StateData data = entry.getValue();
             List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
-            List<InlineKeyboardButton> buttons1 = new ArrayList<>();
-            List<InlineKeyboardButton> buttons2 = new ArrayList<>();
-            if (data.getChilds() != null) {
-                for (MenuState child : data.getChilds()) {
+            List<InlineKeyboardButton> buttonsRow1 = new ArrayList<>();
+            List<InlineKeyboardButton> buttonsRow2 = new ArrayList<>();
+            if (data.getChildren() != null) {
+                for (MenuState child : data.getChildren()) {
                     String childName = statesInfo.get(child).getName();
-                    buttons1.add(new InlineKeyboardButton().setText(childName).setCallbackData(childName));
+                    buttonsRow1.add(new InlineKeyboardButton().setText(childName).setCallbackData(childName));
                 }
             }
             if (data.getParent() != null) {
                 String parentName = statesInfo.get(data.getParent()).getName();
-                buttons2.add(new InlineKeyboardButton().setText("< Back").setCallbackData(parentName));
-                buttons2.add(new InlineKeyboardButton().setText("Main").setCallbackData(MenuState.MAIN_MENU.getName()));
+                buttonsRow2.add(new InlineKeyboardButton().setText("< Back").setCallbackData(parentName));
+                buttonsRow2.add(new InlineKeyboardButton().setText("Main").setCallbackData(MenuState.MAIN_MENU.getName()));
             }
-            buttons.add(buttons1);
-            buttons.add(buttons2);
+            buttons.add(buttonsRow1);
+            buttons.add(buttonsRow2);
             InlineKeyboardMarkup markupKeyboard = new InlineKeyboardMarkup();
             markupKeyboard.setKeyboard(buttons);
             data.keyboard = new InlineKeyboardMarkup();
