@@ -17,6 +17,8 @@ public class Model {
     private static final Logger logger = Logger.getLogger(Model.class.getName());
     private HashMap<MenuState, StateData> statesInfo = new HashMap<>();
 
+    private boolean keyboardEnabled = true;
+
     public Model(){ //мда...
         //menuState = MenuState.MainMenu;
         statesInfo.put(MenuState.MAIN_MENU, new StateData(MenuState.MAIN_MENU.getName(), "Здесь можно выбрать нужную категорию",
@@ -28,6 +30,7 @@ public class Model {
         statesInfo.put(MenuState.PHOTO_GETTER, new StateData(MenuState.PHOTO_GETTER.getName(), "Скажи, что должно быть на картинке, и я поищу что-нибудь подобное",
                 null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.CITIES_GAME, new StateData(MenuState.CITIES_GAME.getName(), "Назови город, и начнем", null, MenuState.GAMES_MENU));
+        statesInfo.put(MenuState.LOCATOR, new StateData(MenuState.LOCATOR.getName(), "Это меню Локатора", null, MenuState.TOOLS_MENU));
         setupInlineKeyboards();
     }
 
@@ -113,7 +116,15 @@ public class Model {
         }
     }
 
-    public InlineKeyboardMarkup getKeyboard(){
+    public InlineKeyboardMarkup getKeyboard() {
         return statesInfo.get(menuState).keyboard;
+    }
+
+    public boolean isKeyboardEnabled() {
+        return keyboardEnabled;
+    }
+
+    public void switchKeyboard(){
+        keyboardEnabled = keyboardEnabled ? false : true;
     }
 }
