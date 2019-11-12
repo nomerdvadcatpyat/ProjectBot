@@ -10,15 +10,26 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class TelegramBot extends TelegramLongPollingBot {
 
+    public TelegramBot() {
+        setupInlineKeyboards();
+    }
+
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
     private Model model = new Model();
+    private HashMap<MenuState, StateData> statesInfo = model.getStatesInfo();
+    private boolean isKeyboardEnabled = false;
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
@@ -34,54 +45,21 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-
-        if (update.hasCallbackQuery()){
-            Message message = update.getCallbackQuery().getMessage();
-            String data = update.getCallbackQuery().getData();
-            if (!data.isEmpty()){
-                MenuState lastState = model.getMenuState();
-                model.updateMenuState(data);
-                if(lastState != model.getMenuState())
-                    editMessageText(message, model.getStateInfoText());
-                String answer;
-                try {
-                    answer = model.getStateAnswer(data);
-                }
-                catch (Exception e){
-                    answer = null;
-                    switch (model.getMenuState()) {
-                        case PHOTO_GETTER:
-                            editMessageText(message, "Image not found");
-                            break;
-                        default:
-                            logger.info("default");
-                            editMessageText(message, "Error");
-                    }
-                }
-                if(answer!=null && !answer.isEmpty()) {
-                    switch (model.getMenuState()) {
-                        case MAIN_MENU:
-                            logger.info("sendAnim");
-                            sendAnimationFromDisk(message, answer);
-                            break;
-
-                        case PHOTO_GETTER:
-                            sendPhotoByURL(message, answer);
-                            break;
-
-                        default:
-                            logger.info("default");
-                            sendMessage(message, answer);
-                    }
-                }
-                logger.info(model.getMenuState().toString());
+        if (update.hasCallbackQuery() || update.hasMessage()){
+            Message message = null;
+            String data = null;
+            if(update.hasCallbackQuery()){
+                isKeyboardEnabled = true;
+                message = update.getCallbackQuery().getMessage();
+                data = update.getCallbackQuery().getData();
             }
-        }
-        else if (update.hasMessage()){
-            logger.info("Чат id - " + update.getMessage().getChatId().toString());
-            Message message = update.getMessage();
-            String data = message.getText();
-            if (!data.isEmpty()) {
+            if(update.hasMessage()){
+                isKeyboardEnabled = false;
+                message = update.getMessage();
+                data = message.getText();
+            }
+
+            if (data != null && !data.isEmpty()){
                 MenuState lastState = model.getMenuState();
                 model.updateMenuState(data);
                 if(lastState != model.getMenuState())
@@ -101,7 +79,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             sendMessage(message, "Error");
                     }
                 }
-                if(answer!=null && !answer.isEmpty()) {
+                if(answer != null && !answer.isEmpty()) {
                     switch (model.getMenuState()) {
                         case MAIN_MENU:
                             logger.info("sendAnim");
@@ -120,16 +98,18 @@ public class TelegramBot extends TelegramLongPollingBot {
                 logger.info(model.getMenuState().toString());
             }
         }
-
-
     }
 
     private void sendMessage(Message message, String text){
+        if(isKeyboardEnabled){
+            editMessageText(message, text);
+            return;
+        }
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setText(text);
-        InlineKeyboardMarkup keyboard = model.getKeyboard();
+        InlineKeyboardMarkup keyboard = getKeyboard();
         if (keyboard != null)
             sendMessage.setReplyMarkup(keyboard);
         try {
@@ -145,7 +125,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         editMessageText.setChatId(message.getChatId());
         editMessageText.setMessageId(message.getMessageId());
         editMessageText.setText(text);
-        InlineKeyboardMarkup keyboard = model.getKeyboard();
+        InlineKeyboardMarkup keyboard = getKeyboard();
         if (keyboard != null)
             editMessageText.setReplyMarkup(keyboard);
         try {
@@ -187,6 +167,46 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    private void setupInlineKeyboards(){
+        for (Map.Entry<MenuState, StateData> entry : statesInfo.entrySet()){
+            StateData data = entry.getValue();
+            List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
+            List<InlineKeyboardButton> buttonsRow1 = new ArrayList<>();
+            List<InlineKeyboardButton> buttonsRow2 = new ArrayList<>();
+            if (data.getChildren() != null) {
+                List<MenuState> children = data.getChildren();
+                for (MenuState child : children) {
+                    String childName = statesInfo.get(child).getName();
+                    InlineKeyboardButton button = new InlineKeyboardButton().setText(childName).setCallbackData(childName);
+                    buttonsRow1.add(button);
+                }
+            }
+            if (data.getParent() != null) {
+                String parentName = statesInfo.get(data.getParent()).getName();
+                buttonsRow2.add(new InlineKeyboardButton().setText("< Back").setCallbackData(parentName));
+                buttonsRow2.add(new InlineKeyboardButton().setText("Main").setCallbackData(MenuState.MAIN_MENU.getName()));
+            }
+            buttons.add(buttonsRow1);
+            buttons.add(buttonsRow2);
+            InlineKeyboardMarkup markupKeyboard = new InlineKeyboardMarkup();
+            markupKeyboard.setKeyboard(buttons);
+            data.keyboard = new InlineKeyboardMarkup();
+            data.keyboard.setKeyboard(buttons);
+        }
+    }
+
+    private InlineKeyboardMarkup getKeyboard(){
+        return statesInfo.get(model.getMenuState()).keyboard;
+    }
+
+    public boolean isKeyboardEnabled() {
+        return isKeyboardEnabled;
+    }
+
+    public void switchKeyboard(){
+        isKeyboardEnabled = !isKeyboardEnabled;
+    }
+
     @Override
     public String getBotUsername() {
         return "OOPContentBot";
@@ -194,6 +214,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "983564401:AAH8_V7YRPCQH3Bi0h2a_b_Pxh8I_KQdwbw";
+        return "";
     }
 }

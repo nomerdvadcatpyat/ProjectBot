@@ -5,7 +5,8 @@ public enum MenuState {
     TOOLS_MENU("Tools Menu"),
     PHOTO_GETTER("Photo Getter"),
     GAMES_MENU("Games Menu"),
-    CITIES_GAME("Cities Game");
+    CITIES_GAME("Cities Game"),
+    LOCATOR("Locator");
 
     private String name;
 

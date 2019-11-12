@@ -5,7 +5,6 @@ import bot.tools.PhotoGetter;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -16,23 +15,28 @@ public class Model {
     private CitiesGame citiesGame;
     private static final Logger logger = Logger.getLogger(Model.class.getName());
     private HashMap<MenuState, StateData> statesInfo = new HashMap<>();
+    //private boolean keyboardEnabled = true;
 
     public Model(){
-        //menuState = MenuState.MainMenu;
         statesInfo.put(MenuState.MAIN_MENU, new StateData(MenuState.MAIN_MENU.getName(), "Здесь можно выбрать нужную категорию",
                 new ArrayList<>(Arrays.asList(MenuState.TOOLS_MENU, MenuState.GAMES_MENU)), null));
         statesInfo.put(MenuState.TOOLS_MENU, new StateData(MenuState.TOOLS_MENU.getName(), "Здесь можно воспользоваться разными сервисами",
-                new ArrayList<>(Arrays.asList(MenuState.PHOTO_GETTER)), MenuState.MAIN_MENU));
+                new ArrayList<>(Arrays.asList(MenuState.PHOTO_GETTER, MenuState.LOCATOR)), MenuState.MAIN_MENU));
         statesInfo.put(MenuState.GAMES_MENU, new StateData(MenuState.GAMES_MENU.getName(), "Здесть можно выбрать игру",
                 new ArrayList<>(Arrays.asList(MenuState.CITIES_GAME)), MenuState.MAIN_MENU));
         statesInfo.put(MenuState.PHOTO_GETTER, new StateData(MenuState.PHOTO_GETTER.getName(), "Скажи, что должно быть на картинке, и я поищу что-нибудь подобное",
                 null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.CITIES_GAME, new StateData(MenuState.CITIES_GAME.getName(), "Назови город, и начнем", null, MenuState.GAMES_MENU));
-        setupInlineKeyboards();
+        statesInfo.put(MenuState.LOCATOR, new StateData(MenuState.LOCATOR.getName(), "Это меню Локатора", null, MenuState.TOOLS_MENU));
+//        setupInlineKeyboards();
     }
 
     public MenuState getMenuState(){
         return menuState;
+    }
+
+    public HashMap<MenuState, StateData> getStatesInfo(){
+        return statesInfo;
     }
 
     public void updateMenuState(String message){
@@ -87,16 +91,18 @@ public class Model {
             menuState = parent;
     }
 
-    private void setupInlineKeyboards(){
+/*    private void setupInlineKeyboards(){
         for (Map.Entry<MenuState, StateData> entry : statesInfo.entrySet()){
             StateData data = entry.getValue();
             List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
             List<InlineKeyboardButton> buttonsRow1 = new ArrayList<>();
             List<InlineKeyboardButton> buttonsRow2 = new ArrayList<>();
             if (data.getChildren() != null) {
-                for (MenuState child : data.getChildren()) {
+                List<MenuState> children = data.getChildren();
+                for (MenuState child : children) {
                     String childName = statesInfo.get(child).getName();
-                    buttonsRow1.add(new InlineKeyboardButton().setText(childName).setCallbackData(childName));
+                    InlineKeyboardButton button = new InlineKeyboardButton().setText(childName).setCallbackData(childName);
+                    buttonsRow1.add(button);
                 }
             }
             if (data.getParent() != null) {
@@ -116,4 +122,12 @@ public class Model {
     public InlineKeyboardMarkup getKeyboard(){
         return statesInfo.get(menuState).keyboard;
     }
+
+    public boolean isKeyboardEnabled() {
+        return keyboardEnabled;
+    }
+
+    public void switchKeyboard(){
+        keyboardEnabled = keyboardEnabled ? false : true;
+    }*/
 }
