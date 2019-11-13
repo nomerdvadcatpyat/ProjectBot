@@ -6,7 +6,6 @@ import bot.model.StateData;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -16,7 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +30,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
     private Model model = new Model();
     private HashMap<MenuState, StateData> statesInfo = model.getStatesInfo();
+    private HashMap<Long, Model> chatIdModel = new HashMap<>();
     private boolean isKeyboardEnabled = false;
 
     public static void main(String[] args) {
@@ -49,19 +48,25 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasCallbackQuery() || update.hasMessage()){
+            Long chatId = null;
             Message message = null;
             String data = null;
             if(update.hasCallbackQuery()){
                 isKeyboardEnabled = true;
+                chatId = update.getCallbackQuery().getMessage().getChatId();
                 message = update.getCallbackQuery().getMessage();
                 data = update.getCallbackQuery().getData();
             }
             if(update.hasMessage()){
                 isKeyboardEnabled = false;
+                chatId = update.getMessage().getChatId();
                 message = update.getMessage();
                 data = message.getText();
             }
-
+            logger.info("chat id " + chatId);
+            if(!chatIdModel.containsKey(chatId))
+                chatIdModel.put(chatId, new Model());
+            model = chatIdModel.get(chatId);
             if (data != null && !data.isEmpty()){
                 MenuState lastState = model.getMenuState();
                 model.updateMenuState(data);
