@@ -22,8 +22,7 @@ public class CitiesGame {
     private char lastC;
 
     public CitiesGame() {
-        data = Parser.parse(new File(System.getProperty("user.dir") +
-                File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "Cities.txt"));
+        data = Parser.parse(new File("src/main/resources/Cities.txt"));
     }
 
     public CitiesGame(HashMap<Character, ArrayList<String>> data) {

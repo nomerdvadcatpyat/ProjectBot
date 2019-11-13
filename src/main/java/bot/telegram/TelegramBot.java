@@ -1,5 +1,6 @@
 package bot.telegram;
 
+import bot.BotProperties;
 import bot.model.MenuState;
 import bot.model.Model;
 import bot.model.StateData;
@@ -15,10 +16,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class TelegramBot extends TelegramLongPollingBot {
@@ -28,6 +28,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
+    private Properties properties = BotProperties.getProperties();
     private Model model = new Model();
     private HashMap<MenuState, StateData> statesInfo = model.getStatesInfo();
     private HashMap<Long, Model> chatIdModel = new HashMap<>();
@@ -176,10 +177,10 @@ public class TelegramBot extends TelegramLongPollingBot {
             List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
             List<InlineKeyboardButton> buttonsRow1 = new ArrayList<>();
             List<InlineKeyboardButton> buttonsRow2 = new ArrayList<>();
-            if (data.getChilds() != null) {
-                List<MenuState> childs = data.getChilds();
-                for (MenuState child : childs) {
-                    String childName = statesInfo.get(child).getName();
+            if (data.getSubmenus() != null) {
+                List<MenuState> submenus = data.getSubmenus();
+                for (MenuState submenu : submenus) {
+                    String childName = statesInfo.get(submenu).getName();
                     InlineKeyboardButton button = new InlineKeyboardButton().setText(childName).setCallbackData(childName);
                     buttonsRow1.add(button);
                 }
@@ -204,11 +205,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "OOPContentBot";
+        return properties.getProperty("TelegramBotName");
     }
 
     @Override
     public String getBotToken() {
-        return "";
+        return properties.getProperty("TelegramBotToken");
     }
 }
