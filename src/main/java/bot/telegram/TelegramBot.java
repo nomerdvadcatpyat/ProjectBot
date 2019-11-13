@@ -43,7 +43,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         try{
-            var bot = new TelegramBot();
+            TelegramBot bot = new TelegramBot();
             telegramBotsApi.registerBot(bot);
         } catch (TelegramApiException e){
             logger.info(e.getMessage());
