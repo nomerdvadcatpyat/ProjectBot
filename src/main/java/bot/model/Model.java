@@ -41,8 +41,8 @@ public class Model {
         toMainMenu(message);
         toBackMenu(message);
         StateData stateData = statesInfo.get(menuState);
-        if (stateData.getChilds() != null) {
-            List<MenuState> childs = stateData.getChilds();
+        if (stateData.getSubmenus() != null) {
+            List<MenuState> childs = stateData.getSubmenus();
             for (MenuState child : childs) {
                 if (child.getName().equals(message))
                     menuState = child;

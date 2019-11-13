@@ -1,7 +1,6 @@
 package bot.model;
 
 
-import bot.model.MenuState;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import java.util.List;
 
@@ -9,14 +8,14 @@ public class StateData {
 
     private String name;
     private String infoText;
-    private List<MenuState> childs;
+    private List<MenuState> submenus;
     private MenuState parent;
     public InlineKeyboardMarkup keyboard;
 
-    public StateData(String name, String infoText, List<MenuState> childs, MenuState parent) {
+    public StateData(String name, String infoText, List<MenuState> submenus, MenuState parent) {
         this.name = name;
         this.infoText = infoText;
-        this.childs = childs;
+        this.submenus = submenus;
         this.parent = parent;
     }
 
@@ -28,8 +27,8 @@ public class StateData {
         return infoText;
     }
 
-    public List<MenuState> getChilds() {
-        return childs;
+    public List<MenuState> getSubmenus() {
+        return submenus;
     }
 
     public MenuState getParent() {
