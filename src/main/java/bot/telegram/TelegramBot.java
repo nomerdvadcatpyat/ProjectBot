@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.logging.Logger;
 
 public class TelegramBot extends TelegramLongPollingBot {
@@ -51,17 +52,20 @@ public class TelegramBot extends TelegramLongPollingBot {
             Long chatId = null;
             Message message = null;
             String data = null;
+            BiConsumer<Message, String> deliveryman = null;
             if(update.hasCallbackQuery()){
                 isKeyboardEnabled = true;
                 chatId = update.getCallbackQuery().getMessage().getChatId();
                 message = update.getCallbackQuery().getMessage();
                 data = update.getCallbackQuery().getData();
+                deliveryman = (m, t) -> editMessageText(m, t);
             }
             if(update.hasMessage()){
                 isKeyboardEnabled = false;
                 chatId = update.getMessage().getChatId();
                 message = update.getMessage();
                 data = message.getText();
+                deliveryman = (m, t) -> sendMessage(m, t);
             }
             logger.info("chat id " + chatId);
             if(!chatIdModel.containsKey(chatId))
@@ -71,7 +75,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 MenuState lastState = model.getMenuState();
                 model.updateMenuState(data);
                 if(lastState != model.getMenuState())
-                    sendMessage(message, model.getStateInfoText());
+                    deliveryman.accept(message, model.getStateInfoText());
                 String answer;
                 try {
                     answer = model.getStateAnswer(data);
@@ -80,11 +84,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                     answer = null;
                     switch (model.getMenuState()) {
                         case PHOTO_GETTER:
-                            sendMessage(message, "Image not found");
+                            deliveryman.accept(message, "Image not found");
                             break;
                         default:
                             logger.info("default");
-                            sendMessage(message, "Error");
+                            deliveryman.accept(message, "Error");
                     }
                 }
                 if(answer != null && !answer.isEmpty()) {
@@ -100,7 +104,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
                         default:
                             logger.info("default");
-                            sendMessage(message, answer);
+                            deliveryman.accept(message, answer);
                     }
                 }
                 logger.info(model.getMenuState().toString());
@@ -109,10 +113,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void sendMessage(Message message, String text){
-        if(isKeyboardEnabled){
-            editMessageText(message, text);
-            return;
-        }
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
