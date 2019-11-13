@@ -41,9 +41,9 @@ public class Model {
         toMainMenu(message);
         toBackMenu(message);
         StateData stateData = statesInfo.get(menuState);
-        if (stateData.getChildren() != null) {
-            List<MenuState> children = stateData.getChildren();
-            for (MenuState child : children) {
+        if (stateData.getChilds() != null) {
+            List<MenuState> childs = stateData.getChilds();
+            for (MenuState child : childs) {
                 if (child.getName().equals(message))
                     menuState = child;
             }
@@ -96,7 +96,7 @@ public class Model {
             List<InlineKeyboardButton> buttonsRow1 = new ArrayList<>();
             List<InlineKeyboardButton> buttonsRow2 = new ArrayList<>();
             if (data.getChildren() != null) {
-                List<MenuState> children = data.getChildren();
+                List<MenuState> childs = data.getChilds();
                 for (MenuState child : children) {
                     String childName = statesInfo.get(child).getName();
                     InlineKeyboardButton button = new InlineKeyboardButton().setText(childName).setCallbackData(childName);

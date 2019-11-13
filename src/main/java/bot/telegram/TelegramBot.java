@@ -176,9 +176,9 @@ public class TelegramBot extends TelegramLongPollingBot {
             List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
             List<InlineKeyboardButton> buttonsRow1 = new ArrayList<>();
             List<InlineKeyboardButton> buttonsRow2 = new ArrayList<>();
-            if (data.getChildren() != null) {
-                List<MenuState> children = data.getChildren();
-                for (MenuState child : children) {
+            if (data.getChilds() != null) {
+                List<MenuState> childs = data.getChilds();
+                for (MenuState child : childs) {
                     String childName = statesInfo.get(child).getName();
                     InlineKeyboardButton button = new InlineKeyboardButton().setText(childName).setCallbackData(childName);
                     buttonsRow1.add(button);
