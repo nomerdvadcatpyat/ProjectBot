@@ -209,11 +209,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return properties.getProperty("TelegramBotName");
+        return "OOPContentBot";
     }
 
     @Override
     public String getBotToken() {
-        return properties.getProperty("TelegramBotToken");
+        return "983564401:AAGJpBa73DQMG3U1tSveBx-G4Whl1_Tc1vw";
     }
 }
