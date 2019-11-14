@@ -1,20 +1,20 @@
 package bot.tools.locator;
 
-@Deprecated
-public class Location {        //Возможно, этот класс будет не нужен
-    private final double latitude;
-    private final double longitude;
 
-    public Location(double latitude, double longitude){
+public class Location {
+    private final float latitude;
+    private final float longitude;
+
+    public Location(float latitude, float longitude){
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public double getLatitude() {
+    public float getLatitude() {
         return latitude;
     }
 
-    public double getLongitude() {
+    public float getLongitude() {
         return longitude;
     }
 }

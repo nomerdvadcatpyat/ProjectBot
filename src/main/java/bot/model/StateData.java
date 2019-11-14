@@ -2,6 +2,8 @@ package bot.model;
 
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+
 import java.util.List;
 
 public class StateData {
@@ -10,7 +12,7 @@ public class StateData {
     private String infoText;
     private List<MenuState> submenus;
     private MenuState parent;
-    public InlineKeyboardMarkup keyboard;
+    public ReplyKeyboard keyboard;
 
     public StateData(String name, String infoText, List<MenuState> submenus, MenuState parent) {
         this.name = name;
