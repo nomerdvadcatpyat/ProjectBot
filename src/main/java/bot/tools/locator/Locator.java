@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class Locator {
 
@@ -18,11 +19,16 @@ public class Locator {
     private LocatorState locatorState = LocatorState.LOCATION_WAITING;
     private ArrayList<Place> suitablePlaces;
     private Settings settings = new Settings(this);
+    private static final Logger logger = Logger.getLogger(Locator.class.getName());
 
     public String getAnswer(String text) throws IOException {
         if (text.equals("/settings")) {
             settings.setPreviousState(locatorState);
             locatorState = LocatorState.SETTINGS;
+            //region Логи
+            logger.info("Old settings:\nPlaces Count: " + settings.getPlacesCount() + "\nScale: " +
+                    settings.getScale() + "\nLocation: Lat=" + location.getLatitude() + ", Lon=" + location.getLongitude());
+            //endregion
             return "Это настройки локатора. Если нужна помощь, введите /help";
         }
         switch (locatorState) {
@@ -93,6 +99,7 @@ public class Locator {
                             int scale = Integer.parseInt(setting[1]);
                             if (setting.length != 2 || scale < -1 || scale > 17)
                                 return "Setting error";
+                            settings.setScale(scale);
                             return "Масштаб карты изменен";
                         }
                         catch (Exception e){
@@ -111,6 +118,10 @@ public class Locator {
                         if (setting.length != 1)
                             return "Setting error";
                         locatorState = settings.getPreviousState();
+                        //region Логи
+                        logger.info("New settings:\nPlaces Count: " + settings.getPlacesCount() + "\nScale: " +
+                                settings.getScale() + "\nLocation: Lat=" + location.getLatitude() + ", Lon=" + location.getLongitude());
+                        //endregion
                         return "Выход из меню настроек";
                 }
                 //endregion
@@ -161,6 +172,7 @@ public class Locator {
                 result.append(location.getLongitude() + "," + location.getLatitude() + ",pm2ntm" + (i + 1) + "~");
         }
         //endregion
+        logger.info("Static Map request - " + result.toString());
         return result.toString();
     }
 
@@ -186,9 +198,10 @@ public class Locator {
 
     public String updateLocation(Location location) {
         this.location = location;
-        //isLocationUpdated = true;
-        if (locatorState == LocatorState.LOCATION_WAITING)
+        if (locatorState == LocatorState.LOCATION_WAITING) {
             locatorState = LocatorState.WAITING_FOR_QUERY;
+            return "Геопозиция обновлена. Теперь можете сделать запрос";
+        }
         return "Геопозиция обновлена";
     }
 
@@ -261,6 +274,7 @@ public class Locator {
         searchMapQuery.append(settings.getPlacesCount());
         searchMapQuery.append("&apikey=");
         searchMapQuery.append(BotProperties.getProperties().getProperty("SearchMapsKey"));
+        logger.info("Search Map query - " + searchMapQuery.toString());
         return searchMapQuery.toString();
     }
 

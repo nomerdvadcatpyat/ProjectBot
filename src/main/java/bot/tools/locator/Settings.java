@@ -14,7 +14,9 @@ public class Settings {
     }
 
     public Settings toDefault() {
-        return new Settings(locator);
+        Settings newSettings = new Settings(locator);
+        newSettings.setPreviousState(previousState);
+        return newSettings;
     }
 
     public String getHelp(){
