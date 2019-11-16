@@ -1,26 +1,29 @@
 package bot.tools.movieRandomizer;
 
-import java.net.URL;
-
 public class Movie {
-    private String name;
-    private String discription;
+    private String title;
+    private String genre;
+    private String overview;
     private String posterURL;
 
-    public String getName() {
-        return name;
+    public Movie() {
+
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getTitle() {
+        return title;
     }
 
-    public String getDiscription() {
-        return discription;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setDiscription(String discription) {
-        this.discription = discription;
+    public String getOverview() {
+        return overview;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
     }
 
     public String getPosterURL() {
@@ -30,4 +33,25 @@ public class Movie {
     public void setPosterURL(String posterURL) {
         this.posterURL = posterURL;
     }
+    
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    @Override
+    public String toString() {
+        String message = title +
+                " Жанр: " + genre +
+                " Описание: " + overview;
+        if(!posterURL.isEmpty()) {
+            System.out.println("{\"message\":\"" + message + "\",\"url\":\"" + posterURL + "\"}");
+            return "{\"message\":\"" + message + "\",\"url\":\"" + posterURL + "\"}";
+        }
+        return  message;
+    }
+
 }

@@ -1,6 +1,7 @@
 package bot.model;
 
 import bot.games.cities.CitiesGame;
+import bot.tools.movieRandomizer.MovieRandomizer;
 import bot.tools.photoGetter.PhotoGetter;
 import bot.tools.locator.Locator;
 
@@ -13,6 +14,7 @@ public class Model {
     private MenuState menuState;
     private CitiesGame citiesGame;
     public Locator locator;
+    private MovieRandomizer movieRandomizer;
     private static final Logger logger = Logger.getLogger(Model.class.getName());
     public static HashMap<MenuState, StateData> statesInfo = new HashMap<>();
     //private boolean keyboardEnabled = true;
@@ -52,7 +54,12 @@ public class Model {
                     break;
                 }
                 return locator.getAnswer(message);
-
+            case MOVIE_RANDOMIZER:
+                if(message.equals(MenuState.MOVIE_RANDOMIZER.getName())){
+                    movieRandomizer = new MovieRandomizer();
+                    break;
+                }
+                return movieRandomizer.getRandomMovie().toString();
 
            /*Шрек case MAIN_MENU:
                 if (message.equals("Shrek"))
