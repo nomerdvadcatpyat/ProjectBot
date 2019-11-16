@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class BotProperties {
-    public static Properties getProperties(){
+    public static String getProperty(String key){
         Properties prop = new Properties();
         try {
             FileInputStream fis = new FileInputStream(
@@ -14,6 +14,7 @@ public class BotProperties {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return prop;
+        String value = prop.getProperty(key);
+        return value;
     }
 }

@@ -273,7 +273,7 @@ public class Locator {
         searchMapQuery.append("&spn=0.1,0.1&results=");
         searchMapQuery.append(settings.getPlacesCount());
         searchMapQuery.append("&apikey=");
-        searchMapQuery.append(BotProperties.getProperties().getProperty("SearchMapsKey"));
+        searchMapQuery.append(BotProperties.getProperty("SearchMapsKey"));
         logger.info("Search Map query - " + searchMapQuery.toString());
         return searchMapQuery.toString();
     }

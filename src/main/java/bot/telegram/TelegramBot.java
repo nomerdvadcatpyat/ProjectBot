@@ -40,14 +40,13 @@ public class TelegramBot extends TelegramLongPollingBot {
         Model.setupStatesInfo();
         setupInlineKeyboards();
         statesInfo.get(MenuState.LOCATOR).keyboard = getLocationKeyboard();
+        statesInfo.get(MenuState.MOVIE_RANDOMIZER).keyboard = getMovieRandomizerKeyboard();
     }
 
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
-    private Properties properties = BotProperties.getProperties();
     private Model model = new Model();
     private HashMap<MenuState, StateData> statesInfo = Model.statesInfo;
     private HashMap<Long, Model> chatIdModel = new HashMap<>();
-    private boolean isKeyboardEnabled = false;
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
@@ -68,16 +67,14 @@ public class TelegramBot extends TelegramLongPollingBot {
             String data = null;
             BiConsumer<Message, String> deliveryman = null;
             if(update.hasCallbackQuery()){
-                isKeyboardEnabled = true;
                 chatId = update.getCallbackQuery().getMessage().getChatId();
                 message = update.getCallbackQuery().getMessage();
                 data = update.getCallbackQuery().getData();
                 deliveryman = (m, t) -> editMessageText(m, t);
-                if (data.equals(MenuState.LOCATOR.getName()))
+                if (data.equals(MenuState.LOCATOR.getName()) || data.equals(MenuState.MOVIE_RANDOMIZER.getName()))
                     deliveryman = (m, t) -> sendMessage(m, t);
             }
             if(update.hasMessage()){
-                isKeyboardEnabled = false;
                 chatId = update.getMessage().getChatId();
                 message = update.getMessage();
                 data = message.getText();
@@ -123,12 +120,13 @@ public class TelegramBot extends TelegramLongPollingBot {
                         case PHOTO_GETTER:
                             sendPhotoByURL(message, answer);
                             break;
+                        case MOVIE_RANDOMIZER:
                         case LOCATOR:
                             if (answer.contains("{")) {
-                                JSONObject mapAnswer = new JSONObject(answer);
-                                String mapMessage = mapAnswer.getString("message");
-                                String url = mapAnswer.getString("url");
-                                sendMessage(message, mapMessage);
+                                JSONObject jsonAnswer = new JSONObject(answer);
+                                String messageText = jsonAnswer.getString("message");
+                                String url = jsonAnswer.getString("url");
+                                sendMessage(message, messageText);
                                 sendPhotoByURL(message, url);
                             }
                             else
@@ -237,9 +235,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         locationButton.setRequestLocation(true);
         row.add(locationButton);
         buttons.add(row);
-        //KeyboardRow backRow = new KeyboardRow();
-        //backRow.add(new KeyboardButton(statesInfo.get(MenuState.LOCATOR).getParent().getName()));
-        //buttons.add(backRow);
         ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
         keyboard.setResizeKeyboard(true);
         keyboard.setOneTimeKeyboard(true);
@@ -247,17 +242,31 @@ public class TelegramBot extends TelegramLongPollingBot {
         return keyboard;
     }
 
+    private ReplyKeyboardMarkup getMovieRandomizerKeyboard() {
+        List<KeyboardRow> buttons = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        KeyboardButton button = new KeyboardButton("Рандомный фильм");
+        row.add(button);
+        buttons.add(row);
+        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
+        keyboard.setResizeKeyboard(true);
+        keyboard.setOneTimeKeyboard(true);
+        keyboard.setKeyboard(buttons);
+        return keyboard;
+    }
+
+
     private ReplyKeyboard getKeyboard(){
         return statesInfo.get(model.getMenuState()).keyboard;
     }
 
     @Override
     public String getBotUsername() {
-        return properties.getProperty("KIShName");
+        return BotProperties.getProperty("TelegramBotName");
     }
 
     @Override
     public String getBotToken() {
-        return properties.getProperty("KIShToken");
+        return BotProperties.getProperty("TelegramBotToken");
     }
 }

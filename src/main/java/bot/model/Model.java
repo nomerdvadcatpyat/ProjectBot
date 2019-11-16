@@ -1,10 +1,9 @@
 package bot.model;
 
 import bot.games.cities.CitiesGame;
-import bot.tools.PhotoGetter;
+import bot.tools.photoGetter.PhotoGetter;
 import bot.tools.locator.Locator;
 
-import javax.xml.stream.Location;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -27,10 +26,10 @@ public class Model {
         toBackMenu(message);
         StateData stateData = statesInfo.get(menuState);
         if (stateData.getSubmenus() != null) {
-            List<MenuState> childs = stateData.getSubmenus();
-            for (MenuState child : childs) {
-                if (child.getName().equals(message))
-                    menuState = child;
+            List<MenuState> submenus = stateData.getSubmenus();
+            for (MenuState submenu : submenus) {
+                if (submenu.getName().equals(message))
+                    menuState = submenu;
             }
         }
     }
@@ -84,13 +83,14 @@ public class Model {
         statesInfo.put(MenuState.MAIN_MENU, new StateData(MenuState.MAIN_MENU.getName(), "Здесь можно выбрать нужную категорию",
                 new ArrayList<>(Arrays.asList(MenuState.TOOLS_MENU, MenuState.GAMES_MENU)), null));
         statesInfo.put(MenuState.TOOLS_MENU, new StateData(MenuState.TOOLS_MENU.getName(), "Здесь можно воспользоваться разными сервисами",
-                new ArrayList<>(Arrays.asList(MenuState.PHOTO_GETTER, MenuState.LOCATOR)), MenuState.MAIN_MENU));
+                new ArrayList<>(Arrays.asList(MenuState.PHOTO_GETTER, MenuState.LOCATOR, MenuState.MOVIE_RANDOMIZER)), MenuState.MAIN_MENU));
         statesInfo.put(MenuState.GAMES_MENU, new StateData(MenuState.GAMES_MENU.getName(), "Здесть можно выбрать игру",
                 new ArrayList<>(Arrays.asList(MenuState.CITIES_GAME)), MenuState.MAIN_MENU));
         statesInfo.put(MenuState.PHOTO_GETTER, new StateData(MenuState.PHOTO_GETTER.getName(), "Скажи, что должно быть на картинке, и я поищу что-нибудь подобное",
                 null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.CITIES_GAME, new StateData(MenuState.CITIES_GAME.getName(), "Назови город, и начнем", null, MenuState.GAMES_MENU));
         statesInfo.put(MenuState.LOCATOR, new StateData(MenuState.LOCATOR.getName(), "Это меню Локатора", null, MenuState.TOOLS_MENU));
+        statesInfo.put(MenuState.MOVIE_RANDOMIZER, new StateData(MenuState.MOVIE_RANDOMIZER.getName(), "Случайный фильм", null, MenuState.TOOLS_MENU));
     }
 
 /*    private void setupInlineKeyboards(){

@@ -1,4 +1,4 @@
-package bot.tools;
+package bot.tools.photoGetter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

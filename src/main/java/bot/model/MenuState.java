@@ -6,7 +6,8 @@ public enum MenuState {
     PHOTO_GETTER("Photo Getter"),
     GAMES_MENU("Games Menu"),
     CITIES_GAME("Cities Game"),
-    LOCATOR("Locator");
+    LOCATOR("Locator"),
+    MOVIE_RANDOMIZER("Movie Randomizer");
 
     private String name;
 
