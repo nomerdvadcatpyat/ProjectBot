@@ -39,6 +39,8 @@ public class Locator {
                 return "Теперь можно начать. Введите запрос";
             case WAITING_FOR_QUERY:
                 suitablePlaces = getSuitablePlaces(text);
+                if (suitablePlaces.size() == 0)
+                    return "К сожалению, по вашему запросу ничего не удалось найти. Пожалуйста, сделайте новый запрос";
                 locatorState = LocatorState.WAITING_FOR_ADDITIONAL_QUERY_FIRST;
                 return buildMainAnswer();
             case WAITING_FOR_ADDITIONAL_QUERY_FIRST:
@@ -148,7 +150,7 @@ public class Locator {
         else {
             if (locatorState == LocatorState.WAITING_FOR_ADDITIONAL_QUERY_FIRST) {
                 locatorState = LocatorState.WAITING_FOR_ADDITIONAL_QUERY_SECOND;
-                return "К сожалению, ваш ответ не удалось обработать. Пожайлуста, повторите запрос";
+                return "К сожалению, ваш ответ не удалось обработать. Пожалуйста, повторите запрос";
             }
             locatorState = LocatorState.WAITING_FOR_ADDITIONAL_FUNCTIONAL_NUMBER;
             return "Снова не удалось обработать ответ. Пожалуйста выберите номер желаемой опции:\n\n" +
@@ -219,6 +221,7 @@ public class Locator {
             JSONObject feature = features.getJSONObject(i);
             result.add(buildPlace(feature));
         }
+        logger.info("Places find: " + result.size());
         return result;
     }
 
