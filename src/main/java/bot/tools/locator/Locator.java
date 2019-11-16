@@ -20,6 +20,7 @@ public class Locator {
     private ArrayList<Place> suitablePlaces;
     private Settings settings = new Settings(this);
     private static final Logger logger = Logger.getLogger(Locator.class.getName());
+    private boolean isLocationInitiallyUpdated = false;
 
     public String getAnswer(String text) throws IOException {
         if (text.equals("/settings")) {
@@ -202,6 +203,7 @@ public class Locator {
         this.location = location;
         if (locatorState == LocatorState.LOCATION_WAITING) {
             locatorState = LocatorState.WAITING_FOR_QUERY;
+            isLocationInitiallyUpdated = true;
             return "Геопозиция обновлена. Теперь можете сделать запрос";
         }
         return "Геопозиция обновлена";
@@ -337,5 +339,9 @@ public class Locator {
         if (metaData.has("Hours"))
             result.append("Режим работы: " + metaData.getJSONObject("Hours").getString("text") + "\n");
         return result.toString();
+    }
+
+    public boolean isLocationInitiallyUpdated() {
+        return isLocationInitiallyUpdated;
     }
 }
