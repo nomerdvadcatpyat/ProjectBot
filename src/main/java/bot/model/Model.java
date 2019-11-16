@@ -79,6 +79,16 @@ public class Model {
             menuState = parent;
     }
 
+    public boolean isStateWithReplyKeyboard(MenuState menuState) {
+        switch (menuState){
+            case LOCATOR:
+            case MOVIE_RANDOMIZER:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public static void setupStatesInfo(){
         statesInfo.put(MenuState.MAIN_MENU, new StateData(MenuState.MAIN_MENU.getName(), "Здесь можно выбрать нужную категорию",
                 new ArrayList<>(Arrays.asList(MenuState.TOOLS_MENU, MenuState.GAMES_MENU)), null));
@@ -92,44 +102,4 @@ public class Model {
         statesInfo.put(MenuState.LOCATOR, new StateData(MenuState.LOCATOR.getName(), "Это меню Локатора", null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.MOVIE_RANDOMIZER, new StateData(MenuState.MOVIE_RANDOMIZER.getName(), "Случайный фильм", null, MenuState.TOOLS_MENU));
     }
-
-/*    private void setupInlineKeyboards(){
-        for (Map.Entry<MenuState, StateData> entry : statesInfo.entrySet()){
-            StateData data = entry.getValue();
-            List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
-            List<InlineKeyboardButton> buttonsRow1 = new ArrayList<>();
-            List<InlineKeyboardButton> buttonsRow2 = new ArrayList<>();
-            if (data.getChildren() != null) {
-                List<MenuState> childs = data.getChilds();
-                for (MenuState child : children) {
-                    String childName = statesInfo.get(child).getName();
-                    InlineKeyboardButton button = new InlineKeyboardButton().setText(childName).setCallbackData(childName);
-                    buttonsRow1.add(button);
-                }
-            }
-            if (data.getParent() != null) {
-                String parentName = statesInfo.get(data.getParent()).getName();
-                buttonsRow2.add(new InlineKeyboardButton().setText("< Back").setCallbackData(parentName));
-                buttonsRow2.add(new InlineKeyboardButton().setText("Main").setCallbackData(MenuState.MAIN_MENU.getName()));
-            }
-            buttons.add(buttonsRow1);
-            buttons.add(buttonsRow2);
-            InlineKeyboardMarkup markupKeyboard = new InlineKeyboardMarkup();
-            markupKeyboard.setKeyboard(buttons);
-            data.keyboard = new InlineKeyboardMarkup();
-            data.keyboard.setKeyboard(buttons);
-        }
-    }
-
-    public InlineKeyboardMarkup getKeyboard(){
-        return statesInfo.get(menuState).keyboard;
-    }
-
-    public boolean isKeyboardEnabled() {
-        return keyboardEnabled;
-    }
-
-    public void switchKeyboard(){
-        keyboardEnabled = keyboardEnabled ? false : true;
-    }*/
 }

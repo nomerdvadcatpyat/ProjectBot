@@ -13,16 +13,19 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiValidationException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -47,6 +50,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private Model model = new Model();
     private HashMap<MenuState, StateData> statesInfo = Model.statesInfo;
     private HashMap<Long, Model> chatIdModel = new HashMap<>();
+    private boolean needToDeleteKeyboard = false;
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
@@ -93,8 +97,17 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (data != null && !data.isEmpty()){
                 MenuState lastState = model.getMenuState();
                 model.updateMenuState(data);
-                if(lastState != model.getMenuState())
-                    deliveryman.accept(message, model.getStateInfoText());
+                if(lastState != model.getMenuState()) {
+                    String infoText = model.getStateInfoText();
+                    if (lastState != null && model.isStateWithReplyKeyboard(lastState)){
+                        needToDeleteKeyboard = true;
+                        sendMessageWithDeletingReplyKeyboard(message, infoText);
+                    }
+                    else {
+                        needToDeleteKeyboard = false;
+                        deliveryman.accept(message, infoText);
+                    }
+                }
                 String answer;
                 try {
                     answer = model.getStateAnswer(data);
@@ -148,7 +161,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setText(text);
         ReplyKeyboard keyboard = getKeyboard();
-        if (keyboard != null)
+        if (keyboard != null && (model.getMenuState() != MenuState.LOCATOR ||
+                (model.locator != null && !model.locator.isLocationInitiallyUpdated())))
             sendMessage.setReplyMarkup(keyboard);
         try {
             execute(sendMessage);
@@ -169,6 +183,33 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(editMessageText);
         }catch(TelegramApiException e){
+            logger.info(e.getLocalizedMessage());
+        }
+    }
+
+    private void sendMessageWithDeletingReplyKeyboard(Message message, String text) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdown(true);
+        sendMessage.setChatId(message.getChatId().toString());
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(new ReplyKeyboardRemove());
+        Message newMessage = null;
+        try {
+             newMessage = execute(sendMessage);
+        }catch (TelegramApiException e){
+            logger.info(e.getMessage());
+        }
+        deleteMessage(newMessage);
+        sendMessage(newMessage, text);
+    }
+
+    private void deleteMessage(Message message) {
+        DeleteMessage deleteMessage = new DeleteMessage();
+        deleteMessage.setChatId(message.getChatId());
+        deleteMessage.setMessageId(message.getMessageId());
+        try{
+            execute(deleteMessage);
+        } catch (TelegramApiException e) {
             logger.info(e.getMessage());
         }
     }
@@ -262,11 +303,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return BotProperties.getProperty("TelegramBotName");
+        return BotProperties.getProperty("KIShName");
     }
 
     @Override
     public String getBotToken() {
-        return BotProperties.getProperty("TelegramBotToken");
+        return BotProperties.getProperty("KIShToken");
     }
 }
