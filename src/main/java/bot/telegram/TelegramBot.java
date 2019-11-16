@@ -119,7 +119,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             deliveryman.accept(message, "Image not found");
                             break;
                         default:
-                            logger.info("default");
+                            logger.info(e.getMessage());
                             deliveryman.accept(message, "Error");
                     }
                 }

@@ -106,7 +106,8 @@ public class Model {
         statesInfo.put(MenuState.PHOTO_GETTER, new StateData(MenuState.PHOTO_GETTER.getName(), "Скажи, что должно быть на картинке, и я поищу что-нибудь подобное",
                 null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.CITIES_GAME, new StateData(MenuState.CITIES_GAME.getName(), "Назови город, и начнем", null, MenuState.GAMES_MENU));
-        statesInfo.put(MenuState.LOCATOR, new StateData(MenuState.LOCATOR.getName(), "Это меню Локатора", null, MenuState.TOOLS_MENU));
+        statesInfo.put(MenuState.LOCATOR, new StateData(MenuState.LOCATOR.getName(), "Это меню Локатора. Для начала нужно отправить боту свою геопозицию, " +
+                "а затем можно сделать запрос. У локатора есть меню настроек, чтобы в него попасть, нужно ввести команду /settings", null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.MOVIE_RANDOMIZER, new StateData(MenuState.MOVIE_RANDOMIZER.getName(), "Случайный фильм", null, MenuState.TOOLS_MENU));
     }
 }

@@ -27,8 +27,12 @@ public class Locator {
             settings.setPreviousState(locatorState);
             locatorState = LocatorState.SETTINGS;
             //region Логи
-            logger.info("Old settings:\nPlaces Count: " + settings.getPlacesCount() + "\nScale: " +
-                    settings.getScale() + "\nLocation: Lat=" + location.getLatitude() + ", Lon=" + location.getLongitude());
+            if (location != null)
+                logger.info("Old settings:\nPlaces Count: " + settings.getPlacesCount() + "\nScale: " +
+                        settings.getScale() + "\nLocation: Lat=" + location.getLatitude() + ", Lon=" + location.getLongitude());
+            else
+                logger.info("Old settings:\nPlaces Count: " + settings.getPlacesCount() + "\nScale: " +
+                        settings.getScale() + "\nLocation: not received");
             //endregion
             return "Это настройки локатора. Если нужна помощь, введите /help";
         }
@@ -122,8 +126,12 @@ public class Locator {
                             return "Setting error";
                         locatorState = settings.getPreviousState();
                         //region Логи
-                        logger.info("New settings:\nPlaces Count: " + settings.getPlacesCount() + "\nScale: " +
-                                settings.getScale() + "\nLocation: Lat=" + location.getLatitude() + ", Lon=" + location.getLongitude());
+                        if (location != null)
+                            logger.info("New settings:\nPlaces Count: " + settings.getPlacesCount() + "\nScale: " +
+                                    settings.getScale() + "\nLocation: Lat=" + location.getLatitude() + ", Lon=" + location.getLongitude());
+                        else
+                            logger.info("New settings:\nPlaces Count: " + settings.getPlacesCount() + "\nScale: " +
+                                    settings.getScale() + "\nLocation: not not received");
                         //endregion
                         return "Выход из меню настроек";
                 }
