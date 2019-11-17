@@ -1,0 +1,367 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "ResponseMetaData": {
+      "SearchResponse": {
+        "found": 93,
+        "display": "multiple",
+        "boundedBy": [
+          [
+            60.54412,
+            56.77710056
+          ],
+          [
+            60.64402,
+            56.87700056
+          ]
+        ]
+      },
+      "SearchRequest": {
+        "request": "Аптека",
+        "skip": 0,
+        "results": 5,
+        "boundedBy": [
+          [
+            60.54407,
+            56.77705049
+          ],
+          [
+            60.64407,
+            56.87705049
+          ]
+        ]
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.617597,
+          56.846199
+        ]
+      },
+      "properties": {
+        "name": "Живика",
+        "description": "ул. Луначарского, 78, Екатеринбург, Россия",
+        "boundedBy": [
+          [
+            60.6134915,
+            56.84394943
+          ],
+          [
+            60.6217025,
+            56.84844843
+          ]
+        ],
+        "CompanyMetaData": {
+          "id": "1455163074",
+          "name": "Живика",
+          "address": "Россия, Свердловская область, Екатеринбург, улица Луначарского, 78",
+          "url": "http://www.zhivika.ru/",
+          "Phones": [
+            {
+              "type": "phone",
+              "formatted": "+7 (343) 370-75-97"
+            }
+          ],
+          "Categories": [
+            {
+              "class": "drugstores",
+              "name": "Аптека"
+            }
+          ],
+          "Hours": {
+            "text": "пн-сб 8:00–21:00; вс 9:00–21:00",
+            "Availabilities": [
+              {
+                "Intervals": [
+                  {
+                    "from": "08:00:00",
+                    "to": "21:00:00"
+                  }
+                ],
+                "Monday": true,
+                "Tuesday": true,
+                "Wednesday": true,
+                "Thursday": true,
+                "Friday": true,
+                "Saturday": true
+              },
+              {
+                "Intervals": [
+                  {
+                    "from": "09:00:00",
+                    "to": "21:00:00"
+                  }
+                ],
+                "Sunday": true
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.55061,
+          56.831023
+        ]
+      },
+      "properties": {
+        "name": "Биофармация",
+        "description": "ул. Крауля, 70, Екатеринбург, Россия",
+        "boundedBy": [
+          [
+            60.546505,
+            56.82877243
+          ],
+          [
+            60.554715,
+            56.83327343
+          ]
+        ],
+        "CompanyMetaData": {
+          "id": "126133784203",
+          "name": "Биофармация",
+          "address": "Россия, Свердловская область, Екатеринбург, улица Крауля, 70",
+          "url": "http://n2513.aptecks.ru/",
+          "Phones": [
+            {
+              "type": "phone",
+              "formatted": "+7 (343) 219-20-19"
+            }
+          ],
+          "Categories": [
+            {
+              "class": "drugstores",
+              "name": "Аптека"
+            }
+          ],
+          "Hours": {
+            "text": "пн-пт 9:00–22:00; сб,вс 9:00–20:00",
+            "Availabilities": [
+              {
+                "Intervals": [
+                  {
+                    "from": "09:00:00",
+                    "to": "22:00:00"
+                  }
+                ],
+                "Monday": true,
+                "Tuesday": true,
+                "Wednesday": true,
+                "Thursday": true,
+                "Friday": true
+              },
+              {
+                "Intervals": [
+                  {
+                    "from": "09:00:00",
+                    "to": "20:00:00"
+                  }
+                ],
+                "Saturday": true,
+                "Sunday": true
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.6093,
+          56.808678
+        ]
+      },
+      "properties": {
+        "name": "Уралочка",
+        "description": "ул. Щорса, 92, Екатеринбург, Россия",
+        "boundedBy": [
+          [
+            60.605195,
+            56.80642593
+          ],
+          [
+            60.613405,
+            56.81092993
+          ]
+        ],
+        "CompanyMetaData": {
+          "id": "36114570552",
+          "name": "Уралочка",
+          "address": "Россия, Свердловская область, Екатеринбург, улица Щорса, 92",
+          "url": "http://aptekauralochka.ru/",
+          "Phones": [
+            {
+              "type": "phone",
+              "formatted": "+7 (343) 377-72-22"
+            }
+          ],
+          "Categories": [
+            {
+              "class": "drugstores",
+              "name": "Аптека"
+            }
+          ],
+          "Hours": {
+            "text": "ежедневно, 7:30–23:00",
+            "Availabilities": [
+              {
+                "Intervals": [
+                  {
+                    "from": "07:30:00",
+                    "to": "23:00:00"
+                  }
+                ],
+                "Everyday": true
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.593662,
+          56.837023
+        ]
+      },
+      "properties": {
+        "name": "Планета здоровья",
+        "description": "просп. Ленина, 24/8, Екатеринбург, Россия",
+        "boundedBy": [
+          [
+            60.5895565,
+            56.83477243
+          ],
+          [
+            60.5977675,
+            56.83927343
+          ]
+        ],
+        "CompanyMetaData": {
+          "id": "1508892203",
+          "name": "Планета здоровья",
+          "address": "Россия, Свердловская область, Екатеринбург, проспект Ленина, 24/8",
+          "url": "http://www.planetazdorovo.ru/",
+          "Phones": [
+            {
+              "type": "phone",
+              "formatted": "+7 (343) 289-00-00"
+            }
+          ],
+          "Categories": [
+            {
+              "class": "drugstores",
+              "name": "Аптека"
+            },
+            {
+              "class": "drugstores",
+              "name": "Аптека"
+            }
+          ],
+          "Hours": {
+            "text": "ежедневно, круглосуточно",
+            "Availabilities": [
+              {
+                "TwentyFourHours": true,
+                "Everyday": true
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          60.595175,
+          56.825562
+        ]
+      },
+      "properties": {
+        "name": "Классика",
+        "description": "ул. Хохрякова, 98, Екатеринбург, Россия",
+        "boundedBy": [
+          [
+            60.5910695,
+            56.82331093
+          ],
+          [
+            60.5992805,
+            56.82781293
+          ]
+        ],
+        "CompanyMetaData": {
+          "id": "1022868082",
+          "name": "Классика",
+          "address": "Россия, Свердловская область, Екатеринбург, улица Хохрякова, 98",
+          "url": "http://www.apteka-klassika.ru/",
+          "Phones": [
+            {
+              "type": "phone",
+              "formatted": "+7 (343) 287-77-77"
+            },
+            {
+              "type": "phone",
+              "formatted": "+7 (3517) 78-50-60"
+            },
+            {
+              "type": "phone",
+              "formatted": "+7 (343) 380-27-32"
+            }
+          ],
+          "Categories": [
+            {
+              "class": "drugstores",
+              "name": "Аптека"
+            }
+          ],
+          "Hours": {
+            "text": "пн-пт 8:00–21:00; сб,вс 9:00–21:00",
+            "Availabilities": [
+              {
+                "Intervals": [
+                  {
+                    "from": "08:00:00",
+                    "to": "21:00:00"
+                  }
+                ],
+                "Monday": true,
+                "Tuesday": true,
+                "Wednesday": true,
+                "Thursday": true,
+                "Friday": true
+              },
+              {
+                "Intervals": [
+                  {
+                    "from": "09:00:00",
+                    "to": "21:00:00"
+                  }
+                ],
+                "Saturday": true,
+                "Sunday": true
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

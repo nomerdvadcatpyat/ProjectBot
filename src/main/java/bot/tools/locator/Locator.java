@@ -4,11 +4,15 @@ import bot.BotProperties;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -21,6 +25,7 @@ public class Locator {
     private Settings settings = new Settings(this);
     private static final Logger logger = Logger.getLogger(Locator.class.getName());
     private boolean isLocationInitiallyUpdated = false;
+    public boolean usingTestSearchMap = false;
 
     public String getAnswer(String text) throws IOException {
         if (text.equals("/settings")) {
@@ -218,13 +223,20 @@ public class Locator {
     }
 
     private ArrayList<Place> getSuitablePlaces(String text) throws IOException {
-        URL searchMapURL = new URL(buildSearchMapQuery(text));
-        Scanner sc = new Scanner((InputStream) searchMapURL.getContent());
-        String searchMapAnswer = "";
-        while (sc.hasNext()) {
-            searchMapAnswer += sc.nextLine();
+        JSONObject object;
+        if (usingTestSearchMap){
+            String testJSON = new String(Files.readAllBytes(Paths.get("src/main/resources/testSearchMapContent.json")), StandardCharsets.UTF_8);
+             object = new JSONObject(testJSON);
         }
-        JSONObject object = new JSONObject(searchMapAnswer);
+        else {
+            URL searchMapURL = new URL(buildSearchMapQuery(text));
+            Scanner sc = new Scanner((InputStream) searchMapURL.getContent());
+            String searchMapAnswer = "";
+            while (sc.hasNext()) {
+                searchMapAnswer += sc.nextLine();
+            }
+            object = new JSONObject(searchMapAnswer);
+        }
         JSONArray features = object.getJSONArray("features");
         ArrayList<Place> result = new ArrayList<>();
         for (int i = 0; i < features.length(); i++) {
@@ -348,6 +360,8 @@ public class Locator {
             result.append("Режим работы: " + metaData.getJSONObject("Hours").getString("text") + "\n");
         return result.toString();
     }
+
+    public LocatorState getState() { return locatorState; }
 
     public boolean isLocationInitiallyUpdated() {
         return isLocationInitiallyUpdated;
