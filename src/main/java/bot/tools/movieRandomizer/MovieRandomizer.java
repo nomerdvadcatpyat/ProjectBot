@@ -2,6 +2,7 @@ package bot.tools.movieRandomizer;
 
 import bot.BotProperties;
 import bot.telegram.TelegramBot;
+import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,7 +22,6 @@ public class MovieRandomizer {
     private int lastMovieID = getLastMovieID();
     private int randomID = rnd.nextInt(lastMovieID - 1) + 1;
     private HashSet<Integer> usedIDs = new HashSet<>();
-    //private JSONObject obj = new JSONObject();
 
     public Movie getRandomMovie() {
         logger.info(api);
@@ -32,25 +32,29 @@ public class MovieRandomizer {
                 logger.info("empty or no review");
                 obj = randomizeMovieJSON();
             }
-            randomMovie.setTitle(obj.getString("title"));
+            randomMovie.title = obj.getString("title");
+            if(obj.getString("release_date").isEmpty())
+                randomMovie.release_date = "дата не указанна.";
+            else
+                randomMovie.release_date = obj.getString("release_date");
             if (obj.getJSONArray("genres").isEmpty())
-                randomMovie.setGenre("нет жанров.");
+                randomMovie.genre = "нет жанров.";
             else {
                 JSONArray genres = obj.getJSONArray("genres");
                 StringBuilder res= new StringBuilder();
                 for(Object genre : genres)
                     res.append(((JSONObject) genre).getString("name")).append(", ");
                 res.deleteCharAt(res.length()-2);
-                randomMovie.setGenre(res.toString());
+                randomMovie.genre = res.toString();
             }
             if(obj.getString("overview").isEmpty())
-                randomMovie.setOverview("нет описания.");
+                randomMovie.overview = "нет описания.";
             else
-                randomMovie.setOverview(obj.getString("overview"));
+                randomMovie.overview = obj.getString("overview");
             if(obj.isNull("poster_path")) // можно засунуть какую-нибудь стандартную картинку
-                randomMovie.setPosterURL("");
+                randomMovie.posterURL = "";
             else
-                randomMovie.setPosterURL("https://image.tmdb.org/t/p/original/" + obj.getString("poster_path"));
+                randomMovie.posterURL = "https://image.tmdb.org/t/p/original/" + obj.getString("poster_path");
         } catch (Exception e) {
             e.printStackTrace();
         }

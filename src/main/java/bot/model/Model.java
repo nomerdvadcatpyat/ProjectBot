@@ -81,9 +81,12 @@ public class Model {
     }
 
     private void toBackMenu(String message){
-        MenuState parent = statesInfo.get(menuState).getParent();
-        if(parent != null && (message.equals(parent.getName()) || message.equals("Back")))
-            menuState = parent;
+        logger.info(menuState.getName());
+        if (statesInfo.get(menuState).hasParent()) {
+            MenuState parent = statesInfo.get(menuState).getParent();
+            if (parent != null && (message.equals(parent.getName()) || message.equals("Back")))
+                menuState = parent;
+        }
     }
 
     public boolean isStateWithReplyKeyboard(MenuState menuState) {

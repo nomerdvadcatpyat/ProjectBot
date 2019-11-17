@@ -8,13 +8,10 @@ public class BotProperties {
     public static String getProperty(String key){
         Properties prop = new Properties();
         try {
-            FileInputStream fis = new FileInputStream(
-                    "src/main/resources/bot.properties");
-            prop.load(fis);
+            prop.load(new FileInputStream("src/main/resources/bot.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String value = prop.getProperty(key);
-        return value;
+        return prop.getProperty(key);
     }
 }
