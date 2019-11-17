@@ -16,8 +16,7 @@ public class Model {
     public Locator locator;
     private MovieRandomizer movieRandomizer;
     private static final Logger logger = Logger.getLogger(Model.class.getName());
-    public static HashMap<MenuState, StateData> statesInfo = new HashMap<>();
-    //private boolean keyboardEnabled = true;
+    public static HashMap<MenuState, StateData> statesInfo = setupStatesInfo();
 
     public MenuState getMenuState(){
         return menuState;
@@ -99,7 +98,8 @@ public class Model {
         }
     }
 
-    public static void setupStatesInfo(){
+    public static HashMap<MenuState, StateData> setupStatesInfo(){
+        HashMap<MenuState, StateData> statesInfo = new HashMap<>();
         statesInfo.put(MenuState.MAIN_MENU, new StateData(MenuState.MAIN_MENU.getName(), "Здесь можно выбрать нужную категорию",
                 new ArrayList<>(Arrays.asList(MenuState.TOOLS_MENU, MenuState.GAMES_MENU)), null));
         statesInfo.put(MenuState.TOOLS_MENU, new StateData(MenuState.TOOLS_MENU.getName(), "Здесь можно воспользоваться разными сервисами",
@@ -112,5 +112,6 @@ public class Model {
         statesInfo.put(MenuState.LOCATOR, new StateData(MenuState.LOCATOR.getName(), "Это меню Локатора. Для начала нужно отправить боту свою геопозицию, " +
                 "а затем можно сделать запрос. У локатора есть меню настроек, чтобы в него попасть, нужно ввести команду /settings", null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.MOVIE_RANDOMIZER, new StateData(MenuState.MOVIE_RANDOMIZER.getName(), "Случайный фильм", null, MenuState.TOOLS_MENU));
+        return statesInfo;
     }
 }

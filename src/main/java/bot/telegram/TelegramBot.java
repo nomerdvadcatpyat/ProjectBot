@@ -40,7 +40,6 @@ import java.util.logging.Logger;
 public class TelegramBot extends TelegramLongPollingBot {
 
     public TelegramBot() {
-        Model.setupStatesInfo();
         setupInlineKeyboards();
         statesInfo.get(MenuState.LOCATOR).keyboard = getLocationKeyboard();
         statesInfo.get(MenuState.MOVIE_RANDOMIZER).keyboard = getMovieRandomizerKeyboard();
