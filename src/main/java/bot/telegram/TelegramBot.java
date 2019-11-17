@@ -113,11 +113,13 @@ public class TelegramBot extends TelegramLongPollingBot {
                 }
                 catch (Exception e){
                     answer = null;
-                    if (model.getMenuState() == MenuState.PHOTO_GETTER) {
-                        deliveryman.accept(message, "Image not found");
-                    } else {
-                        logger.info(e.getMessage());
-                        deliveryman.accept(message, "Error");
+                    switch (model.getMenuState()) {
+                        case PHOTO_GETTER:
+                            deliveryman.accept(message, "Image not found");
+                            break;
+                        default:
+                            logger.info(e.getMessage());
+                            deliveryman.accept(message, "Error");
                     }
                 }
                 if(answer != null && !answer.isEmpty()) {
