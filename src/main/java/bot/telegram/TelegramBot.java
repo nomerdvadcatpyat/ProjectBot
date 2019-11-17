@@ -113,13 +113,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                 }
                 catch (Exception e){
                     answer = null;
-                    switch (model.getMenuState()) {
-                        case PHOTO_GETTER:
-                            deliveryman.accept(message, "Image not found");
-                            break;
-                        default:
-                            logger.info(e.getMessage());
-                            deliveryman.accept(message, "Error");
+                    if (model.getMenuState() == MenuState.PHOTO_GETTER) {
+                        deliveryman.accept(message, "Image not found");
+                    } else {
+                        logger.info(e.getMessage());
+                        deliveryman.accept(message, "Error");
                     }
                 }
                 if(answer != null && !answer.isEmpty()) {
@@ -128,7 +126,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                             logger.info("sendAnim");
                             sendAnimationFromDisk(message, answer);
                             break;*/
-
                         case PHOTO_GETTER:
                             sendPhotoByURL(message, answer);
                             break;
@@ -138,8 +135,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                                 JSONObject jsonAnswer = new JSONObject(answer);
                                 String messageText = jsonAnswer.getString("message");
                                 String url = jsonAnswer.getString("url");
-                                sendMessage(message, messageText);
                                 sendPhotoByURL(message, url);
+                                sendMessage(message, messageText);
                             }
                             else
                                 sendMessage(message, answer);
@@ -302,11 +299,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return BotProperties.getProperty("KIShName");
+        return BotProperties.getProperty("TelegramBotName");
     }
 
     @Override
     public String getBotToken() {
-        return BotProperties.getProperty("KIShToken");
+        return BotProperties.getProperty("TelegramBotToken");
     }
 }

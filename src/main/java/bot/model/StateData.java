@@ -33,6 +33,8 @@ public class StateData {
         return submenus;
     }
 
+    public boolean hasParent() { return parent != null; }
+
     public MenuState getParent() {
         return parent;
     }
