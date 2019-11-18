@@ -97,11 +97,17 @@ public class Locator {
                             return "Setting error";
                         }
                     case "/newGeo":
+                        if (settings.getPreviousState() == LocatorState.LOCATION_WAITING)
+                            settings.setPreviousState(LocatorState.WAITING_FOR_QUERY);
                         try{
                             float lat = Float.parseFloat(setting[1]);
                             float lon = Float.parseFloat(setting[2]);
                             if (setting.length != 3)
                                 return "Setting error";
+                            if (settings.getPreviousState() == LocatorState.LOCATION_WAITING) {
+                                settings.setPreviousState(LocatorState.WAITING_FOR_QUERY);
+                                return "Теперь можно начать. Введите запрос";
+                            }
                             return settings.updateLocationManually(new Location(lat, lon));
                         }catch (Exception e){
                             return "Setting error";
