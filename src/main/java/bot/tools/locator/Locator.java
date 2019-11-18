@@ -4,7 +4,6 @@ import bot.BotProperties;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -371,5 +370,24 @@ public class Locator {
 
     public boolean isLocationInitiallyUpdated() {
         return isLocationInitiallyUpdated;
+    }
+
+    public Location getLocation() {
+        try {
+            return location.clone();
+        }
+        catch (CloneNotSupportedException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+    public Settings getSettings() {
+        try {
+            return settings.clone();
+        }
+        catch (CloneNotSupportedException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 }
