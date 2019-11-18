@@ -3,6 +3,7 @@ package bot.locator;
 import bot.tools.locator.Location;
 import bot.tools.locator.Locator;
 import bot.tools.locator.LocatorState;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.Assert;
 import org.junit.Test;
 import java.io.IOException;
@@ -127,9 +128,17 @@ public class LocatorStateTests {
         Assert.assertEquals(LocatorState.WAITING_FOR_ADDITIONAL_FUNCTIONAL_NUMBER, locator.getState());
     }
 
+    @Test
+    public void manualInitialLocationSetup() throws IOException {
+        Assert.assertEquals(LocatorState.LOCATION_WAITING, locator.getState());
+        locator.getAnswer("/settings");
+        locator.getAnswer("/newGeo 56.827085 60.594069");
+        locator.getAnswer("/back");
+        Assert.assertEquals(LocatorState.WAITING_FOR_QUERY, locator.getState());
+    }
+
     private void prepareLocator() {
         locator.usingTestSearchMap = true;
         locator.updateLocation(new Location(56.827085f,60.594069f));
     }
-
 }
