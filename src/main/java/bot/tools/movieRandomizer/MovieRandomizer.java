@@ -6,109 +6,129 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class MovieRandomizer {
+
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
     private static final String api = BotProperties.getProperty("TMDB_api");
     private static final String baseUrl = "https://api.themoviedb.org/";
     private Random rnd = new Random();
-    private int lastMovieID = getLastMovieID();
-    private int randomID = rnd.nextInt(lastMovieID - 1) + 1;
-    private HashSet<Integer> usedIDs = new HashSet<>();
 
-    public Movie getRandomMovie() {
-        logger.info(api);
+    private String genres = "";
+
+    public Movie getRandomMovie(){
         Movie randomMovie = new Movie();
+        String sortValue = getRandomSortingValue();
+        int randomPageNumber = getRandomPage(sortValue);
+        logger.info("random page" + randomPageNumber);
         try {
-            JSONObject obj = randomizeMovieJSON();
-            while(obj.isEmpty()){ //|| obj.getString("overview").isEmpty()){
-                logger.info("empty or no review");
-                obj = randomizeMovieJSON();
-            }
-            randomMovie.title = obj.getString("title");
-            if(obj.getString("release_date").isEmpty())
+            URL url = new URL(baseUrl + "3/discover/movie?api_key="+ api +"&language=ru"+ sortValue +
+                    "&include_adult=false&include_video=false&page=" + randomPageNumber +"&vote_count.gte=10"+genres);
+            logger.info(url.toString());
+            JSONObject obj = getJSONObject(url);
+            JSONArray results = obj.getJSONArray("results");
+            logger.info("results " + results);
+            JSONObject randomJSON = results.getJSONObject(0);
+            logger.info(randomJSON.toString());
+            randomMovie.title = randomJSON.getString("title");
+            if(randomJSON.getString("release_date").isEmpty())
                 randomMovie.release_date = "дата не указанна.";
             else
-                randomMovie.release_date = obj.getString("release_date");
-            if (obj.getJSONArray("genres").isEmpty())
+                randomMovie.release_date = randomJSON.getString("release_date");
+            if (randomJSON.getJSONArray("genre_ids").isEmpty())
                 randomMovie.genre = "нет жанров.";
             else {
-                JSONArray genres = obj.getJSONArray("genres");
+                JSONArray genreIds = randomJSON.getJSONArray("genre_ids");
                 StringBuilder res= new StringBuilder();
-                for(Object genre : genres)
-                    res.append(((JSONObject) genre).getString("name")).append(", ");
+                for(Object genreId : genreIds)
+                    res.append(genreId) .append(", "); // нужно запилить конвертер или мапу и выводить не айдишники а значения.
                 res.deleteCharAt(res.length()-2);
                 randomMovie.genre = res.toString();
             }
-            if(obj.getString("overview").isEmpty())
+            if(randomJSON.getString("overview").isEmpty())
                 randomMovie.overview = "нет описания.";
             else
-                randomMovie.overview = obj.getString("overview");
-            if(obj.isNull("poster_path")) // можно засунуть какую-нибудь стандартную картинку
+                randomMovie.overview = randomJSON.getString("overview");
+            if(randomJSON.isNull("poster_path")) // можно засунуть какую-нибудь стандартную картинку
                 randomMovie.posterURL = "";
             else
-                randomMovie.posterURL = "https://image.tmdb.org/t/p/original/" + obj.getString("poster_path");
-        } catch (Exception e) {
+                randomMovie.posterURL = "https://image.tmdb.org/t/p/original/" + randomJSON.getString("poster_path");
+        } catch (Exception e){
             e.printStackTrace();
         }
         return randomMovie;
     }
 
-    private JSONObject randomizeMovieJSON(){
-        while ( usedIDs.contains(randomID) )
-            randomID = rnd.nextInt(lastMovieID - 1) + 1;
+    private int getRandomPage(String sortValue){
+        int randomPage = 0;
+        try {
+            URL url = new URL(baseUrl + "3/discover/movie?api_key="+ api +"&language=ru"+ sortValue+
+                    "&include_adult=false&include_video=false&page=1&vote_count.gte=10"+genres);
+            logger.info(url.toString());
+            JSONObject obj = getJSONObject(url);
+            int lastPage = obj.getInt("total_pages");
+            logger.info("lastPage " + lastPage);
+            randomPage = rnd.nextInt(lastPage) + 1;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return randomPage;
+    }
+
+    private String getRandomSortingValue(){
+        String res = "";
+        int method = rnd.nextInt(7);
+        int sortDirection = rnd.nextInt(2);
+        switch (method){
+            case 0:
+                res+="popularity";
+                break;
+            case 1:
+                res+="release_date";
+                break;
+            case 2:
+                res+="revenue";
+                break;
+            case 3:
+                res+="primary_release_date";
+                break;
+            case 4:
+                res+="original_title";
+                break;
+            case 5:
+                res+="vote_average";
+                break;
+            case 6:
+                res+="vote_count";
+                break;
+        }
+        switch (sortDirection){
+            case 0:
+                res+=".asc";
+                break;
+            case 1:
+                res+=".desc";
+                break;
+        }
+        return "&sort_by=" + res;
+    }
+
+    private JSONObject getJSONObject(URL url){
         JSONObject obj = new JSONObject();
-        StringBuilder JSONString = new StringBuilder();
-        try{
-            URL randomMovieURL = new URL(baseUrl + "3/movie/"+ randomID + "?api_key=" + api + "&language=ru_RU");
-            HttpURLConnection huc =  ( HttpURLConnection )  randomMovieURL.openConnection ();
-            huc.setRequestMethod ("GET");
-            huc.connect () ;
-            if(huc.getResponseCode() == 404) {
-                logger.info(""+huc.getResponseCode());
-                return new JSONObject();
-            }
-            huc.disconnect();
-            logger.info("norm url "+randomMovieURL);
-            Scanner sc = new Scanner((InputStream) randomMovieURL.getContent());
-            while (sc.hasNext()){
+        try {
+            Scanner sc = new Scanner((InputStream) url.getContent());
+            StringBuilder JSONString = new StringBuilder();
+            while (sc.hasNext()) {
                 JSONString.append(sc.nextLine());
             }
             obj = new JSONObject(JSONString.toString());
         } catch (Exception e){
             e.printStackTrace();
         }
-        finally {
-            usedIDs.add(randomID);
-        }
         return obj;
-    }
-
-
-    private int getLastMovieID(){
-        int lastID = 0;
-        try {
-            URL lastMovie = new URL(baseUrl + "3/movie/latest?api_key=" + api + "&language=ru-RU");
-
-            Scanner sc = new Scanner((InputStream) lastMovie.getContent());
-            StringBuilder JSONString = new StringBuilder();
-            while (sc.hasNext()) {
-                JSONString.append(sc.nextLine());
-            }
-
-            JSONObject obj = new JSONObject(JSONString.toString());
-
-            lastID = obj.getInt("id");
-            logger.info("lastMovieID " + lastID);
-        } catch (Exception e ) {
-            e.printStackTrace();
-        }
-        return lastID;
     }
 }

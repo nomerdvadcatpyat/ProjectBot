@@ -289,7 +289,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         buttons.add(row);
         ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
         keyboard.setResizeKeyboard(true);
-        keyboard.setOneTimeKeyboard(true);
         keyboard.setKeyboard(buttons);
         return keyboard;
     }
