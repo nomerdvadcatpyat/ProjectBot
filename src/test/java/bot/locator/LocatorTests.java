@@ -3,11 +3,13 @@ package bot.locator;
 import bot.tools.locator.Location;
 import bot.tools.locator.Locator;
 import bot.tools.locator.LocatorState;
+import bot.tools.locator.Settings;
 import org.junit.Assert;
 import org.junit.Test;
+
 import java.io.IOException;
 
-public class LocatorStateTests {
+public class LocatorTests {
 
     Locator locator = new Locator();
 
@@ -127,9 +129,72 @@ public class LocatorStateTests {
         Assert.assertEquals(LocatorState.WAITING_FOR_ADDITIONAL_FUNCTIONAL_NUMBER, locator.getState());
     }
 
+    @Test
+    public void manualInitialLocationSetup() throws IOException {
+        Assert.assertEquals(LocatorState.LOCATION_WAITING, locator.getState());
+        locator.getAnswer("/settings");
+        locator.getAnswer("/newGeo 56.827085 60.594069");
+        locator.getAnswer("/back");
+        Assert.assertEquals(LocatorState.WAITING_FOR_QUERY, locator.getState());
+    }
+
+    @Test
+    public void manualUpdateLocation() throws IOException {
+        prepareLocator();
+        locator.getAnswer("/settings");
+        locator.getAnswer("/newGeo 43.779787 11.265817");
+        locator.getAnswer("/back");
+        Assert.assertEquals(new Location(43.779787f, 11.265817f), locator.getLocation());
+    }
+
+    @Test
+    public void changeSpacesCount() throws IOException {
+        prepareLocator();
+        locator.getAnswer("/settings");
+        locator.getAnswer("/placesCount 20");
+        locator.getAnswer("/back");
+        Assert.assertEquals(20, locator.getSettings().getPlacesCount());
+    }
+
+    @Test
+    public void changeMapScale() throws IOException {
+        prepareLocator();
+        locator.getAnswer("/settings");
+        locator.getAnswer("/scale 16");
+        locator.getAnswer("/back");
+        Assert.assertEquals(16, locator.getSettings().getScale());
+    }
+
+    @Test
+    public void toDefaultSettings() throws IOException {
+        prepareLocator();
+        Settings defaultSettings = new Settings(locator);
+        locator.getAnswer("/settings");
+        locator.getAnswer("/placesCount 20");
+        locator.getAnswer("/scale 17");
+        locator.getAnswer("/back");
+        Assert.assertNotEquals(defaultSettings, locator.getSettings());
+        locator.getAnswer("/settings");
+        locator.getAnswer("/default");
+        locator.getAnswer("/back");
+        Assert.assertEquals(defaultSettings, locator.getSettings());
+    }
+
+    @Test
+    public void wrongSettings() throws IOException {
+        prepareLocator();
+        Location expectedLocation = locator.getLocation();
+        locator.getAnswer("/settings");
+        locator.getAnswer("/pasecNumber 7");
+        locator.getAnswer("/scale");
+        locator.getAnswer("/newGeo 50.000000");
+        locator.getAnswer("/back");
+        Assert.assertEquals(expectedLocation, locator.getLocation());
+        Assert.assertEquals(new Settings(locator), locator.getSettings());
+    }
+
     private void prepareLocator() {
         locator.usingTestSearchMap = true;
         locator.updateLocation(new Location(56.827085f,60.594069f));
     }
-
 }

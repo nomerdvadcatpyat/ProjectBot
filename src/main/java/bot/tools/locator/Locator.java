@@ -4,7 +4,6 @@ import bot.BotProperties;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -97,11 +96,17 @@ public class Locator {
                             return "Setting error";
                         }
                     case "/newGeo":
+                        if (settings.getPreviousState() == LocatorState.LOCATION_WAITING)
+                            settings.setPreviousState(LocatorState.WAITING_FOR_QUERY);
                         try{
                             float lat = Float.parseFloat(setting[1]);
                             float lon = Float.parseFloat(setting[2]);
                             if (setting.length != 3)
                                 return "Setting error";
+                            if (settings.getPreviousState() == LocatorState.LOCATION_WAITING) {
+                                settings.setPreviousState(LocatorState.WAITING_FOR_QUERY);
+                                return "Теперь можно начать. Введите запрос";
+                            }
                             return settings.updateLocationManually(new Location(lat, lon));
                         }catch (Exception e){
                             return "Setting error";
@@ -365,5 +370,24 @@ public class Locator {
 
     public boolean isLocationInitiallyUpdated() {
         return isLocationInitiallyUpdated;
+    }
+
+    public Location getLocation() {
+        try {
+            return location.clone();
+        }
+        catch (CloneNotSupportedException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+    public Settings getSettings() {
+        try {
+            return settings.clone();
+        }
+        catch (CloneNotSupportedException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 }

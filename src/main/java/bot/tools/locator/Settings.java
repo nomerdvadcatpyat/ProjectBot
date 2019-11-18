@@ -1,10 +1,9 @@
 package bot.tools.locator;
 
-public class Settings {
+public class Settings implements Cloneable {
     private int placesCount;
     private Locator locator;
     private int scale;
-
     private LocatorState previousState;
 
     public Settings(Locator locator) {
@@ -60,5 +59,20 @@ public class Settings {
 
     public void setScale(int scale) {
         this.scale = scale;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object)
+            return true;
+        if (object == null || object.getClass() != this.getClass())
+            return false;
+        Settings guest = (Settings) object;                                 //Для сравнения установленных настроек достаточно сравнить только эти поля
+        return placesCount == guest.placesCount && scale == guest.scale;    //Локатор, где используютя эти настройки и предыдущее состояние этого локатора роли не играют
+    }
+
+    @Override
+    public Settings clone() throws CloneNotSupportedException {
+        return (Settings) super.clone();
     }
 }
