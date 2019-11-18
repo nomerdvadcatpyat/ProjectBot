@@ -49,7 +49,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     private Model model = new Model();
     private HashMap<MenuState, StateData> statesInfo = Model.statesInfo;
     private HashMap<Long, Model> chatIdModel = new HashMap<>();
-    private boolean needToDeleteKeyboard = false;
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
@@ -98,14 +97,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                 model.updateMenuState(data);
                 if(lastState != model.getMenuState()) {
                     String infoText = model.getStateInfoText();
-                    if (lastState != null && model.isStateWithReplyKeyboard(lastState)){
-                        needToDeleteKeyboard = true;
+                    if (lastState != null && model.isStateWithReplyKeyboard(lastState))
                         sendMessageWithDeletingReplyKeyboard(message, infoText);
-                    }
-                    else {
-                        needToDeleteKeyboard = false;
+                    else
                         deliveryman.accept(message, infoText);
-                    }
                 }
                 String answer;
                 try {
