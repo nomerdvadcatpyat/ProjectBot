@@ -18,7 +18,30 @@ public class MovieRandomizer {
     private static final String baseUrl = "https://api.themoviedb.org/";
     private Random rnd = new Random();
 
-    private String genres = "";
+    private StringBuilder genresID = new StringBuilder();
+
+    public String getAnswer(String message){
+        if(message.equals("Рандомный фильм"))
+            return getRandomMovie().toString();
+        else
+            for (String genre : message.replaceAll(" ", "").split(",")) {
+                logger.info(genre);
+                if (GenresConverter.hasGenre(genre)) {
+                    logger.info("has genre");
+                    updateGenres(GenresConverter.getGenreId(genre));
+                }
+            }
+            logger.info(genresID.toString());
+            return "Жанры обновлены.";
+    }
+
+    public void updateGenres(String id){
+        logger.info("message "+ id);
+        if(!genresID.toString().contains(id))
+            if(!genresID.toString().isEmpty())
+                genresID.append("%2C").append(id);
+            else genresID.append("&with_genres=").append(id);
+    }
 
     public Movie getRandomMovie(){
         Movie randomMovie = new Movie();
@@ -27,12 +50,12 @@ public class MovieRandomizer {
         logger.info("random page" + randomPageNumber);
         try {
             URL url = new URL(baseUrl + "3/discover/movie?api_key="+ api +"&language=ru"+ sortValue +
-                    "&include_adult=false&include_video=false&page=" + randomPageNumber +"&vote_count.gte=10"+genres);
+                    "&include_adult=false&include_video=false&page=" + randomPageNumber +"&vote_count.gte=10"+ genresID);
             logger.info(url.toString());
             JSONObject obj = getJSONObject(url);
             JSONArray results = obj.getJSONArray("results");
             logger.info("results " + results);
-            JSONObject randomJSON = results.getJSONObject(0);
+            JSONObject randomJSON = results.getJSONObject(rnd.nextInt(20));
             logger.info(randomJSON.toString());
             randomMovie.title = randomJSON.getString("title");
             if(randomJSON.getString("release_date").isEmpty())
@@ -45,9 +68,9 @@ public class MovieRandomizer {
                 JSONArray genreIds = randomJSON.getJSONArray("genre_ids");
                 StringBuilder res= new StringBuilder();
                 for(Object genreId : genreIds)
-                    res.append(genreId) .append(", "); // нужно запилить конвертер или мапу и выводить не айдишники а значения.
+                    res.append(genreId) .append(", ");
                 res.deleteCharAt(res.length()-2);
-                randomMovie.genre = res.toString();
+                randomMovie.genre = GenresConverter.getGenresTitle(res.toString());
             }
             if(randomJSON.getString("overview").isEmpty())
                 randomMovie.overview = "нет описания.";
@@ -67,7 +90,7 @@ public class MovieRandomizer {
         int randomPage = 0;
         try {
             URL url = new URL(baseUrl + "3/discover/movie?api_key="+ api +"&language=ru"+ sortValue+
-                    "&include_adult=false&include_video=false&page=1&vote_count.gte=10"+genres);
+                    "&include_adult=false&include_video=false&page=1&vote_count.gte=10"+ genresID);
             logger.info(url.toString());
             JSONObject obj = getJSONObject(url);
             int lastPage = obj.getInt("total_pages");

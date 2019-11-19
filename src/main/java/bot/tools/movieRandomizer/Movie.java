@@ -11,18 +11,11 @@ public class Movie {
 
     @Override
     public String toString() {
-        if(!posterURL.isEmpty()) {
-            System.out.println(
-                    "{\"message\":\"" + title +
-                    "\\n Дата выхода: " + release_date +
-                    "\\n Жанр: " + genre +
-                    "\\n Описание: " + overview + "\",\"url\":\"" + posterURL + "\"}");
-
+        if(!posterURL.isEmpty())
             return "{\"message\":\"" + title +
                     "\\n Дата выхода: " + release_date +
                     "\\n Жанр: " + genre +
                     "\\n Описание: " + overview + "\",\"url\":\"" + posterURL + "\"}";
-        }
         return  "\t" + title +
                 "\n Дата выхода: " + release_date +
                 "\n Жанр: " + genre +
@@ -30,6 +23,3 @@ public class Movie {
     }
 
 }
-/*String json =
-            "[{\"id\":\"{ID1}\",\"time\":123}, {\"id\":\"{ID2}\",\"time\":124}]";
-        JSONArray array = new JSONArray(json);*/
