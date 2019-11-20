@@ -279,9 +279,15 @@ public class TelegramBot extends TelegramLongPollingBot {
     private ReplyKeyboardMarkup getMovieRandomizerKeyboard() {
         List<KeyboardRow> buttons = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
         KeyboardButton button = new KeyboardButton("Рандомный фильм");
+        KeyboardButton button2 = new KeyboardButton("Обнулить жанры");
+        KeyboardButton button3 = new KeyboardButton("Back");
         row.add(button);
+        row2.add(button2);
+        row2.add(button3);
         buttons.add(row);
+        buttons.add(row2);
         ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
         keyboard.setResizeKeyboard(true);
         keyboard.setKeyboard(buttons);

@@ -23,16 +23,21 @@ public class MovieRandomizer {
     public String getAnswer(String message){
         if(message.equals("Рандомный фильм"))
             return getRandomMovie().toString();
+        else if(message.equals("Обнулить жанры")) {
+            genresID = new StringBuilder();
+            return "Жанры обнулены";
+        }
         else
-            for (String genre : message.replaceAll(" ", "").split(",")) {
-                logger.info(genre);
-                if (GenresConverter.hasGenre(genre)) {
-                    logger.info("has genre");
-                    updateGenres(GenresConverter.getGenreId(genre));
-                }
+        for (String genre : message.replaceAll(" ", "").split(",")) {
+            logger.info(genre);
+            genre = genre.toLowerCase();
+            if (GenresConverter.hasGenre(genre)) {
+                logger.info("has genre");
+                updateGenres(GenresConverter.getGenreId(genre));
             }
-            logger.info(genresID.toString());
-            return "Жанры обновлены.";
+        }
+        logger.info(genresID.toString());
+        return "Жанры обновлены.";
     }
 
     public void updateGenres(String id){
@@ -55,7 +60,8 @@ public class MovieRandomizer {
             JSONObject obj = getJSONObject(url);
             JSONArray results = obj.getJSONArray("results");
             logger.info("results " + results);
-            JSONObject randomJSON = results.getJSONObject(rnd.nextInt(20));
+            logger.info(((Integer)results.length()).toString());
+            JSONObject randomJSON = results.getJSONObject(rnd.nextInt(results.length()));
             logger.info(randomJSON.toString());
             randomMovie.title = randomJSON.getString("title");
             if(randomJSON.getString("release_date").isEmpty())
