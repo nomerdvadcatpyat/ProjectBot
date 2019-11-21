@@ -1,19 +1,9 @@
 package bot.tools.locator;
 
-import bot.BotProperties;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class Locator {
@@ -24,7 +14,7 @@ public class Locator {
     private Settings settings = new Settings(this);
     private static final Logger logger = Logger.getLogger(Locator.class.getName());
     private boolean isLocationInitiallyUpdated = false;
-    public boolean usingTestSearchMap = false;
+    JSONResponseGetter searchMapReceivingMethod = new SearchMapResponseGetter(this);
 
     public String getAnswer(String text) throws IOException {
         if (text.equals("/settings")) {
@@ -228,20 +218,7 @@ public class Locator {
     }
 
     private ArrayList<Place> getSuitablePlaces(String text) throws IOException {
-        JSONObject object;
-        if (usingTestSearchMap){
-            String testJSON = new String(Files.readAllBytes(Paths.get("src/main/resources/testSearchMapContent.json")), StandardCharsets.UTF_8);
-             object = new JSONObject(testJSON);
-        }
-        else {
-            URL searchMapURL = new URL(buildSearchMapQuery(text));
-            Scanner sc = new Scanner((InputStream) searchMapURL.getContent());
-            String searchMapAnswer = "";
-            while (sc.hasNext()) {
-                searchMapAnswer += sc.nextLine();
-            }
-            object = new JSONObject(searchMapAnswer);
-        }
+        JSONObject object = searchMapReceivingMethod.getSearchMapResponse(text);
         JSONArray features = object.getJSONArray("features");
         ArrayList<Place> result = new ArrayList<>();
         for (int i = 0; i < features.length(); i++) {
@@ -290,22 +267,6 @@ public class Locator {
         String additionalInfo = buildAdditionalInfo(metaData);
         Place result = new Place(name, location, type, additionalInfo);
         return result;
-    }
-
-    private String buildSearchMapQuery(String text) throws UnsupportedEncodingException { //запрос к API поиска по организациям от яндекса
-        StringBuilder searchMapQuery = new StringBuilder();
-        searchMapQuery.append("https://search-maps.yandex.ru/v1/?text=");
-        searchMapQuery.append(URLEncoder.encode(text, "UTF-8"));
-        searchMapQuery.append("&lang=ru_RU&ll=");
-        searchMapQuery.append(location.getLongitude());
-        searchMapQuery.append(",");
-        searchMapQuery.append(location.getLatitude());
-        searchMapQuery.append("&spn=0.1,0.1&results=");
-        searchMapQuery.append(settings.getPlacesCount());
-        searchMapQuery.append("&apikey=");
-        searchMapQuery.append(BotProperties.getProperty("SearchMapsKey"));
-        logger.info("Search Map query - " + searchMapQuery.toString());
-        return searchMapQuery.toString();
     }
 
     private String buildAdditionalInfo(JSONObject metaData) {

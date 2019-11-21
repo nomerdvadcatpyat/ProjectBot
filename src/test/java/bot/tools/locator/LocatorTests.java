@@ -1,12 +1,7 @@
-package bot.locator;
+package bot.tools.locator;
 
-import bot.tools.locator.Location;
-import bot.tools.locator.Locator;
-import bot.tools.locator.LocatorState;
-import bot.tools.locator.Settings;
 import org.junit.Assert;
 import org.junit.Test;
-
 import java.io.IOException;
 
 public class LocatorTests {
@@ -194,7 +189,7 @@ public class LocatorTests {
     }
 
     private void prepareLocator() {
-        locator.usingTestSearchMap = true;
+        locator.searchMapReceivingMethod = new TestJSONResponseGetter();
         locator.updateLocation(new Location(56.827085f,60.594069f));
     }
 }
