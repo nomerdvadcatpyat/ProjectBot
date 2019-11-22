@@ -37,17 +37,10 @@ public class GenresConverter {
     }
 
 
-    public static String getGenresTitle (String ids){
-        String[] res = ids.replaceAll(" ", "").split(",");
-        StringBuilder genres = new StringBuilder();
-        for (String id : res) {
-            if (fromIdToName.containsKey(id)) {
-                genres.append(fromIdToName.get(id)).append(", ");
-            }
-        }
-        if (!genres.toString().isEmpty())
-            genres.deleteCharAt(genres.length() - 2);
-        return genres.toString();
+    public static String getGenreTitle(String id){
+            if (fromIdToName.containsKey(id))
+                return fromIdToName.get(id);
+            return "";
     }
 
     public static String getGenreId(String genre){

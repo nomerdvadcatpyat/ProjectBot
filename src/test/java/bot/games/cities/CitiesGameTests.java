@@ -1,7 +1,5 @@
-package games.cities;
+package bot.games.cities;
 
-import bot.games.cities.CitiesGame;
-import bot.games.cities.GameState;
 import org.junit.Assert;
 import org.junit.Test;
 
