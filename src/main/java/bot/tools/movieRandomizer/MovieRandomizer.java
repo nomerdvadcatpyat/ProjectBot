@@ -9,10 +9,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class MovieRandomizer {
@@ -38,6 +35,9 @@ public class MovieRandomizer {
             genresIDsForQuery = new StringBuilder();
             genresTitles = "";
             return "Жанры обнулены";
+        }
+        else if(message.equals("/help")) {
+            return getHelp();
         }
         else
         for (String genre : message.replaceAll(" ", "").split(",")) {
@@ -69,7 +69,7 @@ public class MovieRandomizer {
         try {
             logger.info("random page " + randomPageNumber);
             URL url = new URL(baseUrl + "3/discover/movie?api_key="+ apiKey +"&language=ru"+ sortValue +
-                    "&include_adult=false&include_video=false&page=" + randomPageNumber +"&vote_count.gte=10"+ genresIDsForQuery);
+                    "&include_adult=true&include_video=false&page=" + randomPageNumber +"&vote_count.gte=300"+ genresIDsForQuery);
             logger.info(url.toString());
             JSONObject obj = getJSONObject(url);
             JSONArray results = obj.getJSONArray("results");
@@ -83,8 +83,7 @@ public class MovieRandomizer {
             else {
                 SimpleDateFormat oldDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 SimpleDateFormat newDateFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
-                String oldDateString = randomJSON.getString("release_date");
-                Date date = oldDateFormat.parse(oldDateString);
+                Date date = oldDateFormat.parse(randomJSON.getString("release_date"));
                 randomMovie.release_date = newDateFormat.format(date);
             }
             if (randomJSON.getJSONArray("genre_ids").isEmpty())
@@ -120,7 +119,7 @@ public class MovieRandomizer {
         URL url = null;
         try {
             url = new URL(baseUrl + "3/discover/movie?api_key="+ apiKey +"&language=ru"+ sortValue +
-                    "&include_adult=false&include_video=false&page=1&vote_count.gte=10"+ genresIDsForQuery);
+                    "&include_adult=true&include_video=false&page=1&vote_count.gte=300"+ genresIDsForQuery);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -188,7 +187,13 @@ public class MovieRandomizer {
         return "&sort_by=" + res;
     }
 
-    public String getGenresTitles() {
+    String getGenresTitles() {
         return genresTitles;
+    }
+
+    private String getHelp() {
+        return "Нажмите на кнопку \"Рандомный фильм\" для того, чтобы бот отправил вам случайный фильм в соответствии с жанрами, которые Вы указали." +
+                "\nВ любой момент Вы можете написать через запятую жанры, по которым нужно сортировать фильмы." +
+                "\nДоступные жанры: боевик, приключения, мультфильм, комедия, криминал, документальный, драма, триллер, семейный, ужасы, фэнтези, история, вестерн, военный, телефильм, фантастика, мелодрама, детектив, музыка";
     }
 }

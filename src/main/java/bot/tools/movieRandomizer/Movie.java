@@ -13,13 +13,13 @@ public class Movie {
     public String toString() {
         if(!posterURL.isEmpty())
             return "{\"message\":\"" + title +
-                    "\\n Дата выхода: " + release_date +
-                    "\\n Жанр: " + genre +
-                    "\\n Описание: " + overview + "\",\"url\":\"" + posterURL + "\"}";
-        return  "\t" + title +
-                "\n Дата выхода: " + release_date +
-                "\n Жанр: " + genre +
-                "\n Описание: " + overview;
+                    "\\nДата выхода: " + release_date +
+                    "\\nЖанр: " + genre +
+                    "\\nОписание: " + overview + "\",\"url\":\"" + posterURL + "\"}";
+        return  title +
+                "\nДата выхода: " + release_date +
+                "\nЖанр: " + genre +
+                "\nОписание: " + overview;
     }
 
 }
