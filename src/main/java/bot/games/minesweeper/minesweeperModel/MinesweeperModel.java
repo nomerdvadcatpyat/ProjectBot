@@ -46,7 +46,7 @@ public class MinesweeperModel {
         return openCells;
     }
 
-    public Point markCell(int x, int y) {
+    public void markCell(int x, int y) {
         Cell cell = field[x][y];
         if (cell.getState() == CellState.CLOSED) {
             cell.setState(CellState.MARKED);
@@ -55,11 +55,6 @@ public class MinesweeperModel {
             cell.setState(CellState.CLOSED);
             bombsLeft++;
         }
-        return new Point(x, y);
-    }
-
-    public int getCellNumber(int x, int y) {
-        return field[x][y].getNumber();
     }
 
     public int getBombsLeftCount() {

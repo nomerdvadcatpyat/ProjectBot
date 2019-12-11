@@ -20,7 +20,7 @@ public class Minesweeper {
     public String getAnswer(JSONObject object) {
         int x = object.getInt("x");
         int y = object.getInt("y");
-        HashSet<Point> openCells = null;
+        HashSet<Point> openCells;
         String message = "\"message\":\"Бомб осталось: " + minesweeperModel.getBombsLeftCount() + "\"";
         if (isPushToOpen) {
             openCells = minesweeperModel.openCell(x, y);
@@ -31,10 +31,6 @@ public class Minesweeper {
         if (openCells == null)
             return "{" + message + "}";
         return "{" + getPointJSONArrayInString(openCells) + "," + message + "}";
-    }
-
-    public int getCellNumber(int x, int y) {
-        return minesweeperModel.getCellNumber(x, y);
     }
 
     public boolean isGameOver() {
