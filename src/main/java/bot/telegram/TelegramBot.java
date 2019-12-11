@@ -307,12 +307,12 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<KeyboardRow> buttons = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
         KeyboardRow row2 = new KeyboardRow();
-        KeyboardButton button = new KeyboardButton("Рандомный фильм");
-        KeyboardButton button2 = new KeyboardButton("Обнулить жанры");
-        KeyboardButton button3 = new KeyboardButton("Back");
-        row.add(button);
-        row2.add(button2);
-        row2.add(button3);
+        KeyboardButton randomMovieButton = new KeyboardButton("Рандомный фильм");
+        KeyboardButton genresButton = new KeyboardButton("Обнулить жанры");
+        KeyboardButton backButton = new KeyboardButton("Back");
+        row.add(randomMovieButton);
+        row2.add(genresButton);
+        row2.add(backButton);
         buttons.add(row);
         buttons.add(row2);
         ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
