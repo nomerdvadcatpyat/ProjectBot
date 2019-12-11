@@ -1,12 +1,11 @@
 package bot.telegram;
 
 import bot.BotProperties;
-import bot.games.cities.GameState;
 import bot.model.MenuState;
 import bot.model.Model;
 import bot.model.StateData;
 import bot.tools.locator.Location;
-import com.google.inject.internal.cglib.core.$WeakCacheKey;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -25,15 +24,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiValidationException;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.logging.Logger;
 
@@ -43,6 +35,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         setupInlineKeyboards();
         statesInfo.get(MenuState.LOCATOR).keyboard = getLocationKeyboard();
         statesInfo.get(MenuState.MOVIE_RANDOMIZER).keyboard = getMovieRandomizerKeyboard();
+        statesInfo.get(MenuState.MINESWEEPER).keyboard = getMinesweeperKeyboard();
     }
 
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
@@ -63,7 +56,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasCallbackQuery() || update.hasMessage()){
+        if (update.hasCallbackQuery() || update.hasMessage()) {
             Long chatId = null;
             Message message = null;
             String data = null;
@@ -76,7 +69,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 if (data.equals(MenuState.LOCATOR.getName()) || data.equals(MenuState.MOVIE_RANDOMIZER.getName()))
                     deliveryman = (m, t) -> sendMessage(m, t);
             }
-            if(update.hasMessage()){
+            if(update.hasMessage()) {
                 chatId = update.getMessage().getChatId();
                 message = update.getMessage();
                 data = message.getText();
@@ -92,7 +85,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             if(!chatIdModel.containsKey(chatId))
                 chatIdModel.put(chatId, new Model());
             model = chatIdModel.get(chatId);
-            if (data != null && !data.isEmpty()){
+            if (data != null && !data.isEmpty()) {
                 MenuState lastState = model.getMenuState();
                 model.updateMenuState(data);
                 if(lastState != model.getMenuState()) {
@@ -138,6 +131,40 @@ public class TelegramBot extends TelegramLongPollingBot {
                             else
                                 sendMessage(message, answer);
                             break;
+                        case MINESWEEPER:
+                            InlineKeyboardMarkup keyboard = (InlineKeyboardMarkup) statesInfo.get(MenuState.MINESWEEPER).keyboard;
+                            if(answer.contains("{")) {
+                                JSONObject obj = new JSONObject(answer);
+                                List<List<InlineKeyboardButton>> buttons = keyboard.getKeyboard();
+                                if (obj.has("openCells")) {
+                                    JSONArray jsonArray = obj.getJSONArray("openCells");
+                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                        JSONObject point = jsonArray.getJSONObject(i);
+                                        int x = point.getInt("x");
+                                        int y = point.getInt("y");
+                                        buttons.get(x).get(y).setText(" " + new String(Character.toChars(model.getCellEmojiCode(x, y))) + " ");
+                                    }
+                                }
+                                if (obj.has("markedCell")) {
+                                    int x = obj.getJSONObject("markedCell").getInt("x");
+                                    int y = obj.getJSONObject("markedCell").getInt("y");
+                                    buttons.get(x).get(y).setText(" " + new String(Character.toChars(model.getCellEmojiCode(x, y))) + " ");
+                                }
+                                editMessageText(message, obj.getString("message"));
+                                break;
+                            }
+                            if (answer.equals("/newGame")) {
+                                statesInfo.get(MenuState.MINESWEEPER).keyboard = getMinesweeperKeyboard();
+                                editMessageText(message, "Новая игра");
+                                break;
+                            }
+                            InlineKeyboardButton flagButton = keyboard.getKeyboard().get(keyboard.getKeyboard().size() - 2).get(0);
+                            if (answer.equals("/flag0"))
+                                flagButton.setText("Открыть");
+                            if (answer.equals("/flag1"))
+                                flagButton.setText("Флаг    " + new String(Character.toChars(0x1F6A9)));
+                            editMessageText(message, model.getMinesweeperInfo());
+                            break;
                         default:
                             logger.info("default");
                             deliveryman.accept(message, answer);
@@ -148,7 +175,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private void sendMessage(Message message, String text){
+    private void sendMessage(Message message, String text) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
@@ -164,7 +191,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private void editMessageText(Message message, String text){
+    private void editMessageText(Message message, String text) {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.enableMarkdown(true);
         editMessageText.setChatId(message.getChatId());
@@ -207,7 +234,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private void sendPhotoByURL(Message message, String url){
+    private void sendPhotoByURL(Message message, String url) {
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setPhoto(url);
         sendPhoto.setChatId(message.getChatId().toString());
@@ -234,8 +261,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }*/
 
-    private void setupInlineKeyboards(){
-        for (Map.Entry<MenuState, StateData> entry : statesInfo.entrySet()){
+    private void setupInlineKeyboards() {
+        for (Map.Entry<MenuState, StateData> entry : statesInfo.entrySet()) {
             StateData data = entry.getValue();
             List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
             List<InlineKeyboardButton> buttonsRow1 = new ArrayList<>();
@@ -262,7 +289,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private ReplyKeyboardMarkup getLocationKeyboard(){
+    private ReplyKeyboardMarkup getLocationKeyboard() {
         List<KeyboardRow> buttons = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
         KeyboardButton locationButton = new KeyboardButton("Отправить геопозицию");
@@ -294,6 +321,27 @@ public class TelegramBot extends TelegramLongPollingBot {
         return keyboard;
     }
 
+    private InlineKeyboardMarkup getMinesweeperKeyboard() {
+        List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
+        List<InlineKeyboardButton> buttonsRow1 = new ArrayList<>();
+        List<InlineKeyboardButton> buttonsRow2 = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            List<InlineKeyboardButton> row = new ArrayList<>();
+            for (int j = 0; j < 8; j++) {
+                InlineKeyboardButton button = new InlineKeyboardButton().setText(" " + new String(Character.toChars(0x2B1B)) + " ").setCallbackData("{\"x\":" + i + ",\"y\":" + j + "}");
+                row.add(button);
+            }
+            buttons.add(row);
+        }
+        buttonsRow1.add(new InlineKeyboardButton().setText("Открыть").setCallbackData("/flag"));
+        buttonsRow2.add(new InlineKeyboardButton().setText("Новая игра").setCallbackData(MenuState.MINESWEEPER.getName()));
+        buttonsRow2.add(new InlineKeyboardButton().setText("< Back").setCallbackData(MenuState.GAMES_MENU.getName()));
+        buttons.add(buttonsRow1);
+        buttons.add(buttonsRow2);
+        InlineKeyboardMarkup kb = new InlineKeyboardMarkup().setKeyboard(buttons);
+
+        return new InlineKeyboardMarkup().setKeyboard(buttons);
+    }
 
     private ReplyKeyboard getKeyboard(){
         return statesInfo.get(model.getMenuState()).keyboard;

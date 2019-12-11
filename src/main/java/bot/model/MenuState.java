@@ -7,7 +7,8 @@ public enum MenuState {
     GAMES_MENU("Games Menu"),
     CITIES_GAME("Cities Game"),
     LOCATOR("Locator"),
-    MOVIE_RANDOMIZER("Movie Randomizer");
+    MOVIE_RANDOMIZER("Movie Randomizer"),
+    MINESWEEPER("Minesweeper");
 
     private String name;
 

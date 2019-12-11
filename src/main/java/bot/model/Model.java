@@ -1,13 +1,17 @@
 package bot.model;
 
 import bot.games.cities.CitiesGame;
-import bot.tools.movieRandomizer.GenresConverter;
+import bot.games.minesweeper.Minesweeper;
+import bot.tools.locator.Locator;
 import bot.tools.movieRandomizer.MovieRandomizer;
 import bot.tools.photoGetter.PhotoGetter;
-import bot.tools.locator.Locator;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class Model {
@@ -16,6 +20,7 @@ public class Model {
     private CitiesGame citiesGame;
     public Locator locator;
     private MovieRandomizer movieRandomizer;
+    private Minesweeper minesweeper;
     private static final Logger logger = Logger.getLogger(Model.class.getName());
     public static HashMap<MenuState, StateData> statesInfo = setupStatesInfo();
 
@@ -55,11 +60,26 @@ public class Model {
                 }
                 return locator.getAnswer(message);
             case MOVIE_RANDOMIZER:
-                if(message.equals(MenuState.MOVIE_RANDOMIZER.getName())){
+                if (message.equals(MenuState.MOVIE_RANDOMIZER.getName())){
                     movieRandomizer = new MovieRandomizer();
                     break;
                 }
                 return movieRandomizer.getAnswer(message);
+            case MINESWEEPER:
+                if (message.equals(MenuState.MINESWEEPER.getName())) {
+                    minesweeper = new Minesweeper();
+                    return "/newGame";
+                }
+                if (message.contains("{")) {
+                    logger.info(message);
+                    return minesweeper.getAnswer(new JSONObject(message));
+                }
+                if (message.equals("/flag")) {
+                    minesweeper.isPushToOpen = !minesweeper.isPushToOpen;
+                    return minesweeper.isPushToOpen ? "/flag0" : "/flag1";
+                }
+                break;
+
            /*Шрек case MAIN_MENU:
                 if (message.equals("Shrek"))
                     return new File(System.getProperty("user.dir") +
@@ -72,6 +92,14 @@ public class Model {
 
     public String getStateInfoText(){
         return statesInfo.get(menuState).getInfoText();
+    }
+
+    public int getCellEmojiCode(int x, int y) {
+        return minesweeper.getCellEmojiCode(x, y);
+    }
+
+    public String getMinesweeperInfo() {
+        return minesweeper.getGameInfo();
     }
 
     private void toMainMenu(String message){
@@ -105,13 +133,15 @@ public class Model {
         statesInfo.put(MenuState.TOOLS_MENU, new StateData(MenuState.TOOLS_MENU.getName(), "Здесь можно воспользоваться разными сервисами",
                 new ArrayList<>(Arrays.asList(MenuState.PHOTO_GETTER, MenuState.LOCATOR, MenuState.MOVIE_RANDOMIZER)), MenuState.MAIN_MENU));
         statesInfo.put(MenuState.GAMES_MENU, new StateData(MenuState.GAMES_MENU.getName(), "Здесть можно выбрать игру",
-                new ArrayList<>(Arrays.asList(MenuState.CITIES_GAME)), MenuState.MAIN_MENU));
+                new ArrayList<>(Arrays.asList(MenuState.CITIES_GAME, MenuState.MINESWEEPER)), MenuState.MAIN_MENU));
         statesInfo.put(MenuState.PHOTO_GETTER, new StateData(MenuState.PHOTO_GETTER.getName(), "Скажи, что должно быть на картинке, и я поищу что-нибудь подобное",
                 null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.CITIES_GAME, new StateData(MenuState.CITIES_GAME.getName(), "Назови город, и начнем", null, MenuState.GAMES_MENU));
         statesInfo.put(MenuState.LOCATOR, new StateData(MenuState.LOCATOR.getName(), "Это меню Локатора. Для начала нужно отправить боту свою геопозицию, " +
                 "а затем можно сделать запрос. У локатора есть меню настроек, чтобы в него попасть, нужно ввести команду /settings", null, MenuState.TOOLS_MENU));
-        statesInfo.put(MenuState.MOVIE_RANDOMIZER, new StateData(MenuState.MOVIE_RANDOMIZER.getName(), "Случайный фильм. Введите нужные жанры через запятую для фильтрации и нажмите на кнопку.", null, MenuState.TOOLS_MENU));
+        statesInfo.put(MenuState.MOVIE_RANDOMIZER, new StateData(MenuState.MOVIE_RANDOMIZER.getName(), "Случайный фильм. " +
+                "Введите нужные жанры через запятую для фильтрации и нажмите на кнопку.", null, MenuState.TOOLS_MENU));
+        statesInfo.put(MenuState.MINESWEEPER, new StateData(MenuState.MINESWEEPER.getName(), "Сапёр", null, MenuState.GAMES_MENU));
         return statesInfo;
     }
 }
