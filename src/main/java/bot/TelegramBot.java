@@ -118,9 +118,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;*/
                         case KUDA_GO:
                             if(answer.equals("/new")) {
-                                statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoCitiesKeyboard();
-                                break;
-                            }
+                            statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoCitiesKeyboard();
+                            break;
+                        }
                             if(model.isCitySelectedInKudaGo()) statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoKeyboard();
                             sendMessage(message, answer);
                             break;
