@@ -1,6 +1,5 @@
-package bot.telegram;
+package bot;
 
-import bot.BotProperties;
 import bot.model.MenuState;
 import bot.model.Model;
 import bot.model.StateData;
@@ -36,6 +35,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         statesInfo.get(MenuState.LOCATOR).keyboard = getLocationKeyboard();
         statesInfo.get(MenuState.MOVIE_RANDOMIZER).keyboard = getMovieRandomizerKeyboard();
         statesInfo.get(MenuState.MINESWEEPER).keyboard = getMinesweeperKeyboard();
+        statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoCitiesKeyboard();
     }
 
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
@@ -66,7 +66,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 message = update.getCallbackQuery().getMessage();
                 data = update.getCallbackQuery().getData();
                 deliveryman = (m, t) -> editMessageText(m, t);
-                if (data.equals(MenuState.LOCATOR.getName()) || data.equals(MenuState.MOVIE_RANDOMIZER.getName()))
+                if (data.equals(MenuState.LOCATOR.getName()) || data.equals(MenuState.MOVIE_RANDOMIZER.getName()) || data.equals(MenuState.KUDA_GO.getName()))
                     deliveryman = (m, t) -> sendMessage(m, t);
             }
             if(update.hasMessage()) {
@@ -112,10 +112,18 @@ public class TelegramBot extends TelegramLongPollingBot {
                 }
                 if(answer != null && !answer.isEmpty()) {
                     switch (model.getMenuState()) {
-/*Шрек                        case MAIN_MENU:
-                            logger.info("sendAnim");
-                            sendAnimationFromDisk(message, answer);
-                            break;*/
+            /*Шрек                        case MAIN_MENU:
+                logger.info("sendAnim");
+                sendAnimationFromDisk(message, answer);
+                break;*/
+                        case KUDA_GO:
+                            if(answer.equals("/new")) {
+                                statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoCitiesKeyboard();
+                                break;
+                            }
+                            if(model.isCitySelectedInKudaGo()) statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoKeyboard();
+                            sendMessage(message, answer);
+                            break;
                         case PHOTO_GETTER:
                             sendPhotoByURL(message, answer);
                             break;
@@ -341,6 +349,60 @@ public class TelegramBot extends TelegramLongPollingBot {
         InlineKeyboardMarkup kb = new InlineKeyboardMarkup().setKeyboard(buttons);
 
         return new InlineKeyboardMarkup().setKeyboard(buttons);
+    }
+
+    private ReplyKeyboardMarkup getKudaGoCitiesKeyboard() {
+        List<KeyboardRow> buttons = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
+        KeyboardRow row3 = new KeyboardRow();
+        KeyboardRow row4 = new KeyboardRow();
+        KeyboardRow row5 = new KeyboardRow();
+        KeyboardButton buttonMoscow = new KeyboardButton("Москва");
+        KeyboardButton buttonSpb = new KeyboardButton("Санкт-Петербург");
+        KeyboardButton buttonEkb = new KeyboardButton("Екатеринбург");
+        KeyboardButton buttonKrasn = new KeyboardButton("Красноярск");
+        KeyboardButton buttonKrsnd = new KeyboardButton("Краснодар");
+        KeyboardButton buttonNzjn = new KeyboardButton("Нижний Новгород");
+        KeyboardButton buttonNovos = new KeyboardButton("Новосибирск");
+        KeyboardButton buttonSochi = new KeyboardButton("Сочи");
+        KeyboardButton backButton = new KeyboardButton("Back");
+        row.add(buttonMoscow);
+        row.add(buttonSpb);
+        row2.add(buttonEkb);
+        row2.add(buttonKrasn);
+        row3.add(buttonKrsnd);
+        row3.add(buttonNzjn);
+        row4.add(buttonNovos);
+        row4.add(buttonSochi);
+        row5.add(backButton);
+        buttons.add(row);
+        buttons.add(row2);
+        buttons.add(row3);
+        buttons.add(row4);
+        buttons.add(row5);
+        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
+        keyboard.setResizeKeyboard(false);
+        keyboard.setKeyboard(buttons);
+        return keyboard;
+    }
+
+    private ReplyKeyboardMarkup getKudaGoKeyboard() {
+        List<KeyboardRow> buttons = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
+        KeyboardButton placesButton = new KeyboardButton("Места");
+        KeyboardButton eventsButton = new KeyboardButton("События");
+        KeyboardButton backButton = new KeyboardButton("Back");
+        row.add(placesButton);
+        row.add(eventsButton);
+        row2.add(backButton);
+        buttons.add(row);
+        buttons.add(row2);
+        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
+        keyboard.setResizeKeyboard(true);
+        keyboard.setKeyboard(buttons);
+        return keyboard;
     }
 
     private ReplyKeyboard getKeyboard(){

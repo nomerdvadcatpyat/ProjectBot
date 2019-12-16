@@ -1,7 +1,7 @@
 package bot.tools.movieRandomizer;
 
 import bot.BotProperties;
-import bot.telegram.TelegramBot;
+import bot.TelegramBot;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
