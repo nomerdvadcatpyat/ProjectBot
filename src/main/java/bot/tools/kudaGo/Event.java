@@ -14,7 +14,7 @@ public class Event {
     public Event() {
     }
 
-    public Event(String title, String description, String place, String body_text,
+    public Event(String title, String description, String body_text, String place,
                  String startDate, String endDate, String price, String imageUrl) {
         this.title = title;
         this.description = description;
@@ -29,6 +29,7 @@ public class Event {
     @Override
     public String toString(){
         if(price.isEmpty()) price = "Не указано";
+        if(place.isEmpty()) place = "Не указано";
         return "{\"message\":\"" +
                 "\\n" + title +
                 "\\nМесто: "+ place +

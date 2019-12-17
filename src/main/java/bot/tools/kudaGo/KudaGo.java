@@ -52,14 +52,25 @@ public class KudaGo {
             }
             String title = jsonEvent.getString("title");
             JSONObject dates = jsonEvent.getJSONArray("dates").getJSONObject(0);
-            //SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
-            //System.out.println(sdf.format(dates.getLong("start")) + sdf.format(dates.getLong("end")));
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
+            Date startDate = new Date(dates.getLong("start")*1000L);
+            Date endDate = new Date(dates.getLong("end")*1000L);
+            //СДЕЛАТЬ ПОЛУЧЕНИЕ ПЛЕЙСА ПО АЙДИ
+            String place = "";
+            if(!jsonEvent.isNull("place"))
+                try {
+                    int placeID = jsonEvent.getJSONObject("place").getInt("id");
+                    System.out.println(placeID);
+                    place = getJSONObject(new URL(baseUrl + "places/" + placeID + "/")).getString("title") + ", "
+                        + getJSONObject(new URL(baseUrl + "places/" + placeID + "/")).getString("address");
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             return new Event(title.substring(0,1).toUpperCase() + title.substring(1),
                     jsonEvent.getString("description").replaceAll("\n", ""),
-                    jsonEvent.getString("place"),
                     jsonEvent.getString("body_text").replaceAll("\n", ""),
-                    //sdf.format(dates.getLong("start")),sdf.format(dates.getLong("end")),
-                    "","",
+                    place,
+                    sdf.format(startDate),sdf.format(endDate),
                     jsonEvent.getString("price"),
                     jsonEvent.getJSONArray("images").getJSONObject(0).getString("image")).toString();
         }
@@ -82,11 +93,14 @@ public class KudaGo {
             URL url = new URL(query);
             JSONObject obj = getJSONObject(url);
             int randomPage = rnd.nextInt(obj.getInt("count") / 20) + 1;
+            System.out.println("randomPage " + randomPage);
             query += "&page=" + randomPage;
             url = new URL(query);
             obj = getJSONObject(url);
             JSONArray results = obj.getJSONArray("results");
-            randomJSON = results.getJSONObject(rnd.nextInt(results.length()));
+            int rand = rnd.nextInt(results.length());
+            System.out.println("el " + rand);
+            randomJSON = results.getJSONObject(rand);
         }catch (Exception e){
             e.printStackTrace();
         }
