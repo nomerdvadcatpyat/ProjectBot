@@ -116,23 +116,25 @@ public class TelegramBot extends TelegramLongPollingBot {
                 logger.info("sendAnim");
                 sendAnimationFromDisk(message, answer);
                 break;*/
-                        case KUDA_GO:
-                            if(answer.equals("/new")) {
-                            statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoCitiesKeyboard();
-                            break;
-                        }
-                            if(model.isCitySelectedInKudaGo()) statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoKeyboard();
-                            sendMessage(message, answer);
-                            break;
+
                         case PHOTO_GETTER:
                             sendPhotoByURL(message, answer);
                             break;
+                        case KUDA_GO:
+                            if(answer.equals("/new")) {
+                                statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoCitiesKeyboard();
+                                break;
+                            }
+                            if(model.isCitySelectedInKudaGo()) statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoKeyboard();
                         case MOVIE_RANDOMIZER:
                         case LOCATOR:
+                            logger.info("ANSWER " + answer);
                             if (answer.contains("{")) {
+                                logger.info("contains");
                                 JSONObject jsonAnswer = new JSONObject(answer);
                                 String messageText = jsonAnswer.getString("message");
                                 String url = jsonAnswer.getString("url");
+                                logger.info("MESSAGE" + messageText + "\\n URL: " + url);
                                 sendPhotoByURL(message, url);
                                 sendMessage(message, messageText);
                             }

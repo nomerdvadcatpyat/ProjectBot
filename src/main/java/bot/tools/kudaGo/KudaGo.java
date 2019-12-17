@@ -1,5 +1,6 @@
 package bot.tools.kudaGo;
 
+import bot.tools.locator.Place;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,7 +28,7 @@ public class KudaGo {
         }
         String query;
         if(message.equals("Места")) {
-            query = baseUrl + "places/?location=" + city;
+            query = baseUrl + "places/?text_format=text&location=" + city;
             //int randomPage = getRandomPage(query);
             //query+="&page="+randomPage;
             //JSONArray results = obj.getJSONArray("results");
@@ -41,7 +42,7 @@ public class KudaGo {
     }
 
     private String getRandomPlace(String query){
-        String res = "";
+        Plcae plcae = new Plcae();
         try {
             URL url = new URL(query);
             JSONObject obj = getJSONObject(url);
@@ -51,12 +52,18 @@ public class KudaGo {
             obj = getJSONObject(url);
             JSONArray results = obj.getJSONArray("results");
             JSONObject randomJSON = results.getJSONObject(rnd.nextInt(results.length()));
-            // ну кароче нужно https://kudago.com/public-api/v1.4/places/randomJSON.getInt("id")/ и от туда все доставать.
-            // распилить все это на методы кста нужно точно
+            url = new URL(baseUrl + "places/" + randomJSON.getInt("id") + "/?text_format=text");
+            System.out.println(url);
+            obj = getJSONObject(url);
+            plcae.title = obj.getString("title");
+            plcae.description = obj.getString("description");
+            plcae.body_text = obj.getString("body_text");
+            plcae.address = obj.getString("address");
+            plcae.imageUrl = obj.getJSONArray("images").getJSONObject(0).getString("image");
         } catch (Exception e){
             e.printStackTrace();
         }
-        return res;
+        return plcae.toString();
     }
 
     private String convertMessageToCity(String message){
