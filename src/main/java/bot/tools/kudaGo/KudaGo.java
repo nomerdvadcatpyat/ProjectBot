@@ -1,11 +1,13 @@
 package bot.tools.kudaGo;
 
-import bot.tools.locator.Place;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -28,42 +30,67 @@ public class KudaGo {
         }
         String query;
         if(message.equals("Места")) {
-            query = baseUrl + "places/?text_format=text&location=" + city;
-            //int randomPage = getRandomPage(query);
-            //query+="&page="+randomPage;
-            //JSONArray results = obj.getJSONArray("results");
-            //JSONObject randomJSON = results.getJSONObject(rnd.nextInt(results.length()))
-            return getRandomPlace(query);
+            query = baseUrl + "places/?fields=title,description,body_text,address,timetable,price,images&text_format=text&location=" + city;
+            JSONObject jsonPlace = getRandomJSON(query);
+            String title = jsonPlace.getString("title");
+            return new Place(title.substring(0,1).toUpperCase() + title.substring(1),
+            jsonPlace.getString("description").replaceAll("\n", ""),
+            jsonPlace.getString("body_text").replaceAll("\n", ""),
+            jsonPlace.getString("address"),
+            jsonPlace.getJSONArray("images").getJSONObject(0).getString("image"),
+            jsonPlace.getString("timetable")).toString();
         }
         if(message.equals("События")) {
-            return "События";
+            long since = (System.currentTimeMillis() / 1000L) - 432000;
+            query = baseUrl + "events/?actual_since="+ since + "&fields=title,description,body_text,place,dates,price,images&text_format=text&location=" + city;
+            JSONObject jsonEvent = getRandomJSON(query);
+            System.out.println(query);
+            System.out.println(jsonEvent.toString());
+            while (!isActualEvent(jsonEvent)) {
+                System.out.println("wrong event");
+                jsonEvent = getRandomJSON(query);
+            }
+            String title = jsonEvent.getString("title");
+            JSONObject dates = jsonEvent.getJSONArray("dates").getJSONObject(0);
+            //SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
+            //System.out.println(sdf.format(dates.getLong("start")) + sdf.format(dates.getLong("end")));
+            return new Event(title.substring(0,1).toUpperCase() + title.substring(1),
+                    jsonEvent.getString("description").replaceAll("\n", ""),
+                    jsonEvent.getString("place"),
+                    jsonEvent.getString("body_text").replaceAll("\n", ""),
+                    //sdf.format(dates.getLong("start")),sdf.format(dates.getLong("end")),
+                    "","",
+                    jsonEvent.getString("price"),
+                    jsonEvent.getJSONArray("images").getJSONObject(0).getString("image")).toString();
         }
         return "";
     }
 
-    private String getRandomPlace(String query){
-        Plcae plcae = new Plcae();
+    private boolean isActualEvent(JSONObject event){
+        long currentUnixTime = System.currentTimeMillis() / 1000L;
+        JSONObject dates = event.getJSONArray("dates").getJSONObject(0);
+        System.out.println(currentUnixTime);
+        System.out.println(dates.getLong("start") + " " + dates.getLong("end"));
+        if(dates.getLong("start") < 0) return false;
+        return dates.getLong("start") < currentUnixTime &&
+                currentUnixTime < dates.getLong("end");
+    }
+
+    private JSONObject getRandomJSON(String query){
+        JSONObject randomJSON = new JSONObject();
         try {
             URL url = new URL(query);
             JSONObject obj = getJSONObject(url);
             int randomPage = rnd.nextInt(obj.getInt("count") / 20) + 1;
-            query+="&page="+randomPage;
+            query += "&page=" + randomPage;
             url = new URL(query);
             obj = getJSONObject(url);
             JSONArray results = obj.getJSONArray("results");
-            JSONObject randomJSON = results.getJSONObject(rnd.nextInt(results.length()));
-            url = new URL(baseUrl + "places/" + randomJSON.getInt("id") + "/?text_format=text");
-            System.out.println(url);
-            obj = getJSONObject(url);
-            plcae.title = obj.getString("title");
-            plcae.description = obj.getString("description");
-            plcae.body_text = obj.getString("body_text");
-            plcae.address = obj.getString("address");
-            plcae.imageUrl = obj.getJSONArray("images").getJSONObject(0).getString("image");
-        } catch (Exception e){
+            randomJSON = results.getJSONObject(rnd.nextInt(results.length()));
+        }catch (Exception e){
             e.printStackTrace();
         }
-        return plcae.toString();
+        return randomJSON;
     }
 
     private String convertMessageToCity(String message){
