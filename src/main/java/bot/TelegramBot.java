@@ -245,6 +245,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void sendPhotoByURL(Message message, String url) {
+        System.out.println("url in sendPhoto " + url);
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setPhoto(url);
         sendPhoto.setChatId(message.getChatId().toString());
