@@ -151,7 +151,7 @@ public class Model {
                 "а затем можно сделать запрос. У локатора есть меню настроек, чтобы в него попасть, нужно ввести команду /settings", null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.MOVIE_RANDOMIZER, new StateData(MenuState.MOVIE_RANDOMIZER.getName(), "Случайный фильм. Для вызова справки /help", null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.MINESWEEPER, new StateData(MenuState.MINESWEEPER.getName(), "Сапёр", null, MenuState.GAMES_MENU));
-        statesInfo.put(MenuState.KUDA_GO, new StateData(MenuState.KUDA_GO.getName(), System.getenv("KUDA GO"), null, MenuState.TOOLS_MENU));
+        statesInfo.put(MenuState.KUDA_GO, new StateData(MenuState.KUDA_GO.getName(), "KUDA GO", null, MenuState.TOOLS_MENU));
         return statesInfo;
     }
 }
