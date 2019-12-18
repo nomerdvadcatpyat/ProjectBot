@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class MovieRandomizer {
 
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
-    private static final String apiKey = BotProperties.getProperty("TMDB_api");
+    private static final String apiKey = System.getenv("TMDB_API");
     private static final String baseUrl = "https://api.themoviedb.org/";
     private Random rnd = new Random();
     private StringBuilder genresIDsForQuery = new StringBuilder();

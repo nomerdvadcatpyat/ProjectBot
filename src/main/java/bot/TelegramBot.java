@@ -118,7 +118,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 break;*/
 
                         case PHOTO_GETTER:
-                            sendPhotoByURL(message, answer);
+                            sendPhotoByURL(message, answer);  //"https://cdn.pixabay.com/photo/2017/09/14/11/07/water-2748640_1280.png"
                             break;
                         case KUDA_GO:
                             if(answer.equals("/new")) {
@@ -413,11 +413,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return BotProperties.getProperty("TelegramBotName");
+        return System.getenv("TELEGRAM_BOT_NAME");
     }
 
     @Override
     public String getBotToken() {
-        return BotProperties.getProperty("TelegramBotToken");
+        return System.getenv("TELEGRAM_BOT_TOKEN");
     }
 }
