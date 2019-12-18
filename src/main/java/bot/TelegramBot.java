@@ -24,6 +24,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.logging.Logger;
@@ -42,6 +45,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private Model model = new Model();
     private HashMap<MenuState, StateData> statesInfo = Model.statesInfo;
     private HashMap<Long, Model> chatIdModel = new HashMap<>();
+    private static final String PORT = System.getenv("PORT");
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
@@ -51,6 +55,15 @@ public class TelegramBot extends TelegramLongPollingBot {
             telegramBotsApi.registerBot(bot);
         } catch (TelegramApiException e){
             logger.info(e.getMessage());
+        }
+        try (ServerSocket serverSocket = new ServerSocket(Integer.valueOf(PORT))) {
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 
