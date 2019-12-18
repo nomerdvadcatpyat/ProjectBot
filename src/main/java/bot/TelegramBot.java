@@ -1,6 +1,5 @@
-package bot.telegram;
+package bot;
 
-import bot.BotProperties;
 import bot.model.MenuState;
 import bot.model.Model;
 import bot.model.StateData;
@@ -25,6 +24,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.logging.Logger;
@@ -36,12 +38,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         statesInfo.get(MenuState.LOCATOR).keyboard = getLocationKeyboard();
         statesInfo.get(MenuState.MOVIE_RANDOMIZER).keyboard = getMovieRandomizerKeyboard();
         statesInfo.get(MenuState.MINESWEEPER).keyboard = getMinesweeperKeyboard();
+        statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoCitiesKeyboard();
     }
 
     private static final Logger logger = Logger.getLogger(TelegramBot.class.getName());
     private Model model = new Model();
     private HashMap<MenuState, StateData> statesInfo = Model.statesInfo;
     private HashMap<Long, Model> chatIdModel = new HashMap<>();
+    private static final String PORT = System.getenv("PORT");
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
@@ -51,6 +55,15 @@ public class TelegramBot extends TelegramLongPollingBot {
             telegramBotsApi.registerBot(bot);
         } catch (TelegramApiException e){
             logger.info(e.getMessage());
+        }
+        try (ServerSocket serverSocket = new ServerSocket(Integer.valueOf(PORT))) {
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 
@@ -66,7 +79,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 message = update.getCallbackQuery().getMessage();
                 data = update.getCallbackQuery().getData();
                 deliveryman = (m, t) -> editMessageText(m, t);
-                if (data.equals(MenuState.LOCATOR.getName()) || data.equals(MenuState.MOVIE_RANDOMIZER.getName()))
+                if (data.equals(MenuState.LOCATOR.getName()) || data.equals(MenuState.MOVIE_RANDOMIZER.getName()) || data.equals(MenuState.KUDA_GO.getName()))
                     deliveryman = (m, t) -> sendMessage(m, t);
             }
             if(update.hasMessage()) {
@@ -112,19 +125,29 @@ public class TelegramBot extends TelegramLongPollingBot {
                 }
                 if(answer != null && !answer.isEmpty()) {
                     switch (model.getMenuState()) {
-/*Шрек                        case MAIN_MENU:
-                            logger.info("sendAnim");
-                            sendAnimationFromDisk(message, answer);
-                            break;*/
+            /*Шрек                        case MAIN_MENU:
+                logger.info("sendAnim");
+                sendAnimationFromDisk(message, answer);
+                break;*/
+
                         case PHOTO_GETTER:
-                            sendPhotoByURL(message, answer);
+                            sendPhotoByURL(message, answer);  //"https://cdn.pixabay.com/photo/2017/09/14/11/07/water-2748640_1280.png"
                             break;
+                        case KUDA_GO:
+                            if(answer.equals("/new")) {
+                                statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoCitiesKeyboard();
+                                break;
+                            }
+                            if(model.isCitySelectedInKudaGo()) statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoKeyboard();
                         case MOVIE_RANDOMIZER:
                         case LOCATOR:
+                            logger.info("ANSWER " + answer);
                             if (answer.contains("{")) {
+                                logger.info("contains");
                                 JSONObject jsonAnswer = new JSONObject(answer);
                                 String messageText = jsonAnswer.getString("message");
                                 String url = jsonAnswer.getString("url");
+                                logger.info("MESSAGE" + messageText + "\\n URL: " + url);
                                 sendPhotoByURL(message, url);
                                 sendMessage(message, messageText);
                             }
@@ -235,6 +258,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void sendPhotoByURL(Message message, String url) {
+        System.out.println("url in sendPhoto " + url);
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setPhoto(url);
         sendPhoto.setChatId(message.getChatId().toString());
@@ -343,17 +367,71 @@ public class TelegramBot extends TelegramLongPollingBot {
         return new InlineKeyboardMarkup().setKeyboard(buttons);
     }
 
+    private ReplyKeyboardMarkup getKudaGoCitiesKeyboard() {
+        List<KeyboardRow> buttons = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
+        KeyboardRow row3 = new KeyboardRow();
+        KeyboardRow row4 = new KeyboardRow();
+        KeyboardRow row5 = new KeyboardRow();
+        KeyboardButton buttonMoscow = new KeyboardButton("Москва");
+        KeyboardButton buttonSpb = new KeyboardButton("Санкт-Петербург");
+        KeyboardButton buttonEkb = new KeyboardButton("Екатеринбург");
+        KeyboardButton buttonKrasn = new KeyboardButton("Красноярск");
+        KeyboardButton buttonKrsnd = new KeyboardButton("Краснодар");
+        KeyboardButton buttonNzjn = new KeyboardButton("Нижний Новгород");
+        KeyboardButton buttonNovos = new KeyboardButton("Новосибирск");
+        KeyboardButton buttonSochi = new KeyboardButton("Сочи");
+        KeyboardButton backButton = new KeyboardButton("Back");
+        row.add(buttonMoscow);
+        row.add(buttonSpb);
+        row2.add(buttonEkb);
+        row2.add(buttonKrasn);
+        row3.add(buttonKrsnd);
+        row3.add(buttonNzjn);
+        row4.add(buttonNovos);
+        row4.add(buttonSochi);
+        row5.add(backButton);
+        buttons.add(row);
+        buttons.add(row2);
+        buttons.add(row3);
+        buttons.add(row4);
+        buttons.add(row5);
+        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
+        keyboard.setResizeKeyboard(false);
+        keyboard.setKeyboard(buttons);
+        return keyboard;
+    }
+
+    private ReplyKeyboardMarkup getKudaGoKeyboard() {
+        List<KeyboardRow> buttons = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
+        KeyboardButton placesButton = new KeyboardButton("Места");
+        KeyboardButton eventsButton = new KeyboardButton("События");
+        KeyboardButton backButton = new KeyboardButton("Back");
+        row.add(placesButton);
+        row.add(eventsButton);
+        row2.add(backButton);
+        buttons.add(row);
+        buttons.add(row2);
+        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
+        keyboard.setResizeKeyboard(true);
+        keyboard.setKeyboard(buttons);
+        return keyboard;
+    }
+
     private ReplyKeyboard getKeyboard(){
         return statesInfo.get(model.getMenuState()).keyboard;
     }
 
     @Override
     public String getBotUsername() {
-        return BotProperties.getProperty("TelegramBotName");
+        return System.getenv("TELEGRAM_BOT_NAME");
     }
 
     @Override
     public String getBotToken() {
-        return BotProperties.getProperty("TelegramBotToken");
+        return System.getenv("TELEGRAM_BOT_TOKEN");
     }
 }

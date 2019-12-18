@@ -8,7 +8,8 @@ public enum MenuState {
     CITIES_GAME("Cities Game"),
     LOCATOR("Locator"),
     MOVIE_RANDOMIZER("Movie Randomizer"),
-    MINESWEEPER("Minesweeper");
+    MINESWEEPER("Minesweeper"),
+    KUDA_GO("Kuda Go");
 
     private String name;
 

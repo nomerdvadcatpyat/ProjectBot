@@ -2,6 +2,7 @@ package bot.model;
 
 import bot.games.cities.CitiesGame;
 import bot.games.minesweeper.Minesweeper;
+import bot.tools.kudaGo.KudaGo;
 import bot.tools.locator.Locator;
 import bot.tools.movieRandomizer.MovieRandomizer;
 import bot.tools.photoGetter.PhotoGetter;
@@ -20,6 +21,7 @@ public class Model {
     public Locator locator;
     private MovieRandomizer movieRandomizer;
     private Minesweeper minesweeper;
+    private KudaGo kudaGo;
     private static final Logger logger = Logger.getLogger(Model.class.getName());
     public static HashMap<MenuState, StateData> statesInfo = setupStatesInfo();
 
@@ -78,6 +80,12 @@ public class Model {
                     return minesweeper.isPushToOpen ? "/flag0" : "/flag1";
                 }
                 break;
+            case KUDA_GO:
+                if (message.equals(MenuState.KUDA_GO.getName())) {
+                    kudaGo = new KudaGo();
+                    return "/new";
+                }
+                return kudaGo.getAnswer(message);
 
            /*Шрек case MAIN_MENU:
                 if (message.equals("Shrek"))
@@ -101,6 +109,8 @@ public class Model {
         return minesweeper.getGameInfo();
     }
 
+    public boolean isCitySelectedInKudaGo(){ return kudaGo.isCitySelected(); }
+
     private void toMainMenu(String message){
         if(message.equals(MenuState.MAIN_MENU.getName()) || message.equals("/start"))
             menuState = MenuState.MAIN_MENU;
@@ -119,6 +129,7 @@ public class Model {
         switch (menuState){
             case LOCATOR:
             case MOVIE_RANDOMIZER:
+            case KUDA_GO:
                 return true;
             default:
                 return false;
@@ -130,7 +141,7 @@ public class Model {
         statesInfo.put(MenuState.MAIN_MENU, new StateData(MenuState.MAIN_MENU.getName(), "Здесь можно выбрать нужную категорию",
                 new ArrayList<>(Arrays.asList(MenuState.TOOLS_MENU, MenuState.GAMES_MENU)), null));
         statesInfo.put(MenuState.TOOLS_MENU, new StateData(MenuState.TOOLS_MENU.getName(), "Здесь можно воспользоваться разными сервисами",
-                new ArrayList<>(Arrays.asList(MenuState.PHOTO_GETTER, MenuState.LOCATOR, MenuState.MOVIE_RANDOMIZER)), MenuState.MAIN_MENU));
+                new ArrayList<>(Arrays.asList(MenuState.PHOTO_GETTER, MenuState.LOCATOR, MenuState.MOVIE_RANDOMIZER,MenuState.KUDA_GO)), MenuState.MAIN_MENU));
         statesInfo.put(MenuState.GAMES_MENU, new StateData(MenuState.GAMES_MENU.getName(), "Здесть можно выбрать игру",
                 new ArrayList<>(Arrays.asList(MenuState.CITIES_GAME, MenuState.MINESWEEPER)), MenuState.MAIN_MENU));
         statesInfo.put(MenuState.PHOTO_GETTER, new StateData(MenuState.PHOTO_GETTER.getName(), "Скажи, что должно быть на картинке, и я поищу что-нибудь подобное",
@@ -140,6 +151,7 @@ public class Model {
                 "а затем можно сделать запрос. У локатора есть меню настроек, чтобы в него попасть, нужно ввести команду /settings", null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.MOVIE_RANDOMIZER, new StateData(MenuState.MOVIE_RANDOMIZER.getName(), "Случайный фильм. Для вызова справки /help", null, MenuState.TOOLS_MENU));
         statesInfo.put(MenuState.MINESWEEPER, new StateData(MenuState.MINESWEEPER.getName(), "Сапёр", null, MenuState.GAMES_MENU));
+        statesInfo.put(MenuState.KUDA_GO, new StateData(MenuState.KUDA_GO.getName(), "KUDA GO", null, MenuState.TOOLS_MENU));
         return statesInfo;
     }
 }

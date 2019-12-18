@@ -41,7 +41,7 @@ class SearchMapResponseGetter implements JSONResponseGetter {
         searchMapQuery.append("&spn=0.1,0.1&results=");
         searchMapQuery.append(locator.getSettings().getPlacesCount());
         searchMapQuery.append("&apikey=");
-        searchMapQuery.append(BotProperties.getProperty("SearchMapsKey"));
+        searchMapQuery.append(System.getenv("SEARCH_MAP_KEY"));
         logger.info("Search Map query - " + searchMapQuery.toString());
         return searchMapQuery.toString();
     }
