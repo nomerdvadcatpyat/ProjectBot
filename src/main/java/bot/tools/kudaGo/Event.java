@@ -5,9 +5,8 @@ public class Event {
     String title;
     String description;
     String place;
+    String dates;
     String body_text;
-    String startDate;
-    String endDate;
     String price;
     String imageUrl;
 
@@ -15,13 +14,12 @@ public class Event {
     }
 
     public Event(String title, String description, String body_text, String place,
-                 String startDate, String endDate, String price, String imageUrl) {
+                 String dates, String price, String imageUrl) {
         this.title = title;
         this.description = description;
         this.place = place;
+        this.dates = dates;
         this.body_text = body_text;
-        this.startDate = startDate;
-        this.endDate = endDate;
         this.price = price;
         this.imageUrl = imageUrl;
     }
@@ -33,8 +31,7 @@ public class Event {
         return "{\"message\":\"" +
                 "\\n" + title +
                 "\\nМесто: "+ place +
-                "\\nДата начала: " + startDate +
-                "\\nДата окончания: " + endDate +
+                "\\nДаты: " + dates +
                 "\\nОписание: " + description +
                 "\\n" + body_text + "\",\"url\":\"" + imageUrl + "\"}";
     }

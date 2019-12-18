@@ -41,8 +41,10 @@ public class KudaGo {
             jsonPlace.getString("timetable")).toString();
         }
         if(message.equals("События")) {
+            Event resEvent = new Event();
             long since = (System.currentTimeMillis() / 1000L) - 432000;
-            query = baseUrl + "events/?actual_since="+ since + "&fields=title,description,body_text,place,dates,price,images&text_format=text&location=" + city;
+            long until = (System.currentTimeMillis() / 1000L) + 157680000;
+            query = baseUrl + "events/?actual_since="+ since + "&actual_until=" + until + "&fields=title,description,body_text,place,dates,price,images&text_format=text&location=" + city;
             JSONObject jsonEvent = getRandomJSON(query);
             System.out.println(query);
             System.out.println(jsonEvent.toString());
@@ -51,11 +53,7 @@ public class KudaGo {
                 jsonEvent = getRandomJSON(query);
             }
             String title = jsonEvent.getString("title");
-            JSONObject dates = jsonEvent.getJSONArray("dates").getJSONObject(0);
-            SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
-            Date startDate = new Date(dates.getLong("start")*1000L);
-            Date endDate = new Date(dates.getLong("end")*1000L);
-            //СДЕЛАТЬ ПОЛУЧЕНИЕ ПЛЕЙСА ПО АЙДИ
+            resEvent.title = title.substring(0,1).toUpperCase() + title.substring(1);
             String place = "";
             if(!jsonEvent.isNull("place"))
                 try {
@@ -66,13 +64,21 @@ public class KudaGo {
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-            return new Event(title.substring(0,1).toUpperCase() + title.substring(1),
-                    jsonEvent.getString("description").replaceAll("\n", ""),
-                    jsonEvent.getString("body_text").replaceAll("\n", ""),
-                    place,
-                    sdf.format(startDate),sdf.format(endDate),
-                    jsonEvent.getString("price"),
-                    jsonEvent.getJSONArray("images").getJSONObject(0).getString("image")).toString();
+            resEvent.place = place;
+            JSONObject dates = jsonEvent.getJSONArray("dates").getJSONObject(0);
+            if(dates.getLong("start") == -62135433000L || dates.getLong("end") == 253370754000L)
+                resEvent.dates = "Круглый год.";
+            else {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
+                Date startDate = new Date(dates.getLong("start") * 1000L);
+                Date endDate = new Date(dates.getLong("end") * 1000L);
+                resEvent.dates = "Начало: " + sdf.format(startDate) + ", Конец: " + sdf.format(endDate);
+            }
+            resEvent.description = jsonEvent.getString("description").replaceAll("\n", "");
+            resEvent.body_text = jsonEvent.getString("body_text").replaceAll("\n", "");
+            resEvent.price = jsonEvent.getString("price");
+            resEvent.imageUrl =  jsonEvent.getJSONArray("images").getJSONObject(0).getString("image");
+            return resEvent.toString();
         }
         return "";
     }
@@ -82,7 +88,6 @@ public class KudaGo {
         JSONObject dates = event.getJSONArray("dates").getJSONObject(0);
         System.out.println(currentUnixTime);
         System.out.println(dates.getLong("start") + " " + dates.getLong("end"));
-        if(dates.getLong("start") < 0) return false;
         return dates.getLong("start") < currentUnixTime &&
                 currentUnixTime < dates.getLong("end");
     }
