@@ -79,7 +79,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                 message = update.getCallbackQuery().getMessage();
                 data = update.getCallbackQuery().getData();
                 deliveryman = (m, t) -> editMessageText(m, t);
-                if (data.equals(MenuState.LOCATOR.getName()) || data.equals(MenuState.MOVIE_RANDOMIZER.getName()) || data.equals(MenuState.KUDA_GO.getName()))
+                if (data.equals(MenuState.LOCATOR.getName()) || data.equals(MenuState.MOVIE_RANDOMIZER.getName())
+                        || data.equals(MenuState.KUDA_GO.getName()))
                     deliveryman = (m, t) -> sendMessage(m, t);
             }
             if(update.hasMessage()) {
@@ -124,6 +125,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     }
                 }
                 if(answer != null && !answer.isEmpty()) {
+                    logger.info("answer " + answer);
                     switch (model.getMenuState()) {
             /*Шрек                        case MAIN_MENU:
                 logger.info("sendAnim");
@@ -136,7 +138,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         case KUDA_GO:
                             if(answer.equals("/new")) {
                                 statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoCitiesKeyboard();
-                                break;
+                                answer = "Выберите город.";
                             }
                             if(model.isCitySelectedInKudaGo()) statesInfo.get(MenuState.KUDA_GO).keyboard = getKudaGoKeyboard();
                         case MOVIE_RANDOMIZER:

@@ -25,7 +25,10 @@ public class KudaGo {
     public String getAnswer(String message){
         if(!citySelected) {
             city = convertMessageToCity(message);
-            if(citySelected) return "Вы выбрали город " + message;
+            if(citySelected) {
+                //citySelected = false;
+                return "Вы выбрали город " + message;
+            }
             else return "Выберите город из предложенных";
         }
         String query;

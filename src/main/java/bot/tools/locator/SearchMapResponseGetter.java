@@ -1,6 +1,5 @@
 package bot.tools.locator;
 
-import bot.BotProperties;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;

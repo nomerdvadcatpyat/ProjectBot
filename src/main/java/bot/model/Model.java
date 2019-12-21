@@ -83,6 +83,7 @@ public class Model {
             case KUDA_GO:
                 if (message.equals(MenuState.KUDA_GO.getName())) {
                     kudaGo = new KudaGo();
+                    System.out.println("new KudaGO city selected:" + kudaGo.isCitySelected());
                     return "/new";
                 }
                 return kudaGo.getAnswer(message);
