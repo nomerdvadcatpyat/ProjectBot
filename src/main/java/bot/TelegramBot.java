@@ -3,6 +3,7 @@ package bot;
 import bot.model.MenuState;
 import bot.model.Model;
 import bot.model.StateData;
+import bot.tools.JSONExtension;
 import bot.tools.locator.Location;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -144,7 +145,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         case MOVIE_RANDOMIZER:
                         case LOCATOR:
                             logger.info("ANSWER " + answer);
-                            if (answer.contains("{")) {
+                            if (JSONExtension.isJSON(answer)) {
                                 logger.info("contains");
                                 JSONObject jsonAnswer = new JSONObject(answer);
                                 String messageText = jsonAnswer.getString("message");

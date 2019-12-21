@@ -1,6 +1,7 @@
 package bot.tools.movieRandomizer;
 
 import bot.TelegramBot;
+import bot.tools.JSONExtension;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -70,7 +71,7 @@ public class MovieRandomizer {
             URL url = new URL(baseUrl + "3/discover/movie?api_key="+ apiKey +"&language=ru"+ sortValue +
                     "&include_adult=true&include_video=false&page=" + randomPageNumber +"&vote_count.gte=300"+ genresIDsForQuery);
             logger.info(url.toString());
-            JSONObject obj = getJSONObject(url);
+            JSONObject obj = JSONExtension.getJSONByUrl(url);
             JSONArray results = obj.getJSONArray("results");
             logger.info("results " + results);
             logger.info(((Integer)results.length()).toString());
@@ -123,29 +124,13 @@ public class MovieRandomizer {
             e.printStackTrace();
         }
         logger.info(url.toString());
-        JSONObject obj = getJSONObject(url);
+        JSONObject obj = JSONExtension.getJSONByUrl(url);
         int lastPage = obj.getInt("total_pages");
         if (lastPage == 0)
             throw new MovieException();
         logger.info("lastPage " + lastPage);
         randomPage = rnd.nextInt(lastPage) + 1;
         return randomPage;
-    }
-
-    private JSONObject getJSONObject(URL url){
-        JSONObject obj = new JSONObject();
-        try {
-            Scanner sc = new Scanner((InputStream) url.getContent());
-            StringBuilder JSONString = new StringBuilder();
-            while (sc.hasNext()) {
-                JSONString.append(sc.nextLine());
-            }
-            obj = new JSONObject(JSONString.toString());
-        } catch (Exception e){
-            e.getMessage();
-            e.printStackTrace();
-        }
-        return obj;
     }
 
     private String getRandomSortingValue(){

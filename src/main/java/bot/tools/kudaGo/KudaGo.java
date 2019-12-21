@@ -1,5 +1,6 @@
 package bot.tools.kudaGo;
 
+import bot.tools.JSONExtension;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -62,8 +63,8 @@ public class KudaGo {
                 try {
                     int placeID = jsonEvent.getJSONObject("place").getInt("id");
                     System.out.println(placeID);
-                    place = getJSONObject(new URL(baseUrl + "places/" + placeID + "/")).getString("title") + ", "
-                        + getJSONObject(new URL(baseUrl + "places/" + placeID + "/")).getString("address");
+                    place = JSONExtension.getJSONByUrl(new URL(baseUrl + "places/" + placeID + "/")).getString("title") + ", "
+                        + JSONExtension.getJSONByUrl(new URL(baseUrl + "places/" + placeID + "/")).getString("address");
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -99,12 +100,12 @@ public class KudaGo {
         JSONObject randomJSON = new JSONObject();
         try {
             URL url = new URL(query);
-            JSONObject obj = getJSONObject(url);
+            JSONObject obj = JSONExtension.getJSONByUrl(url);
             int randomPage = rnd.nextInt(obj.getInt("count") / 20) + 1;
             System.out.println("randomPage " + randomPage);
             query += "&page=" + randomPage;
             url = new URL(query);
-            obj = getJSONObject(url);
+            obj = JSONExtension.getJSONByUrl(url);
             JSONArray results = obj.getJSONArray("results");
             int rand = rnd.nextInt(results.length());
             System.out.println("el " + rand);
@@ -131,21 +132,5 @@ public class KudaGo {
                 citySelected = false;
                 return "";
         }
-    }
-
-    private JSONObject getJSONObject(URL url){
-        JSONObject obj = new JSONObject();
-        try {
-            Scanner sc = new Scanner((InputStream) url.getContent());
-            StringBuilder JSONString = new StringBuilder();
-            while (sc.hasNext()) {
-                JSONString.append(sc.nextLine());
-            }
-            obj = new JSONObject(JSONString.toString());
-        } catch (Exception e){
-            e.getMessage();
-            e.printStackTrace();
-        }
-        return obj;
     }
 }

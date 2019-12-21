@@ -1,5 +1,6 @@
 package bot.tools.photoGetter;
 
+import bot.tools.JSONExtension;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,13 +20,7 @@ public class PhotoGetter {
         URL url = new URL("https://pixabay.com/api/?key=14027120-bbc2ef0602a8cefada51f4654&q=" +
                 URLEncoder.encode(query, "UTF-8") +"&image_type=all&per_page=200&safesearch=false");
         logger.info(url.toString());
-        Scanner sc = new Scanner((InputStream) url.getContent());
-        String JSONString = "";
-        while (sc.hasNext()){
-            JSONString += sc.nextLine();
-        }
-
-        JSONObject obj = new JSONObject(JSONString);
+        JSONObject obj = JSONExtension.getJSONByUrl(url);
         JSONArray hits = obj.getJSONArray("hits");
         Integer totalHits = obj.getInt("totalHits");
         logger.info(totalHits.toString());
